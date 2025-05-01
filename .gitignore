@@ -1,0 +1,50 @@
+# Compiled class files
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# IDEs
+/.idea/
+/*.iml
+/.project
+/.classpath
+/.settings/
+/target/
+/bin/
+/build/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Node modules (if front-end lives here too)
+node_modules/
+
+# Environment files
+.env
+
+# Spring Boot specific
+spring.log
+
+# Tests reports
+/test-output/
+
+# Maven
+.mvn/
+!**/src/main/**/.gitkeep
+!**/src/test/**/.gitkeep
