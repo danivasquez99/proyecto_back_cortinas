@@ -1,7 +1,7 @@
 package cr.ac.ucr.ie.lenguajes_2025.domain;
 import java.util.Date;
 
-public class Servicio {
+public class Service {
 
     private int id;
     private String name;
@@ -12,10 +12,10 @@ public class Servicio {
     private String status; 
     private Date creationDate;
 
-    public Servicio() {
+    public Service() {
     }
 
-    public Servicio(int id, String name, String category, String description, float estimatedCost,
+    public Service(int id, String name, String category, String description, float estimatedCost,
                     String estimatedDuration, String status, Date creationDate) {
         this.id = id;
         this.name = name;
