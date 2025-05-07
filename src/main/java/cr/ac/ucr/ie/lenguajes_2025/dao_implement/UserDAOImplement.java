@@ -60,8 +60,8 @@ public class UserDAOImplement implements UserDAO {
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO user");
         sql.append("(idUser, name, birthdate, email, password, ");
-        sql.append("urlProfilePicture, role, isActive, creationDate) ");
-        sql.append("VALUES (?,?,?,?,?,?,?,?,?)");
+        sql.append("urlProfilePicture, role, creationDate) ");
+        sql.append("VALUES (?,?,?,?,?,?,?,?)");
 
         try {
             Connection cn = ConnectionDB.getConnection();

@@ -48,3 +48,5 @@ spring.log
 .mvn/
 !**/src/main/**/.gitkeep
 !**/src/test/**/.gitkeep
+"nbactions.xml" 
+"git" 

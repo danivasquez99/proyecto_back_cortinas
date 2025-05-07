@@ -1,5 +1,6 @@
 package cr.ac.ucr.ie.lenguajes_2025.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,7 +12,7 @@ public class User {
  
     private int idUser;
     private String name;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthdate;
     private String email;
     private String password;
