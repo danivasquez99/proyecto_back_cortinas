@@ -14,7 +14,7 @@ public class ConnectionDB {
     
     private final static String USER = "root";
     
-    private final static String PASSWORD = "12345";
+    private final static String PASSWORD = "";
     
     private final static String HOST = "localhost";
     
