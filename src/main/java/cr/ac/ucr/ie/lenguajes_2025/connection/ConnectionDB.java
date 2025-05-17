@@ -10,7 +10,7 @@ import java.sql.SQLException;
  */
 public class ConnectionDB {
     
-    private final static String DATABASE = "lenguajes-2025";
+    private final static String DATABASE = "lenguajes_2025";
     
     private final static String USER = "root";
     
