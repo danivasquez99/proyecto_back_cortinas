@@ -1,22 +1,23 @@
 package cr.ac.ucr.ie.lenguajes_2025.domain;
-import java.util.Date;
+
+import java.sql.Date;
 
 public class Service {
 
     private int id;
     private String name;
-    private String category;
+    private String category; // Ej: "Instalación", "Asesoría"
     private String description;
     private float estimatedCost;
-    private String estimatedDuration;
-    private String status; 
+    private String estimatedDuration; // Ej: "02:30:00"
+    private char status; // 'A' = Available, 'N' = Not Available
     private Date creationDate;
 
     public Service() {
     }
 
     public Service(int id, String name, String category, String description, float estimatedCost,
-                    String estimatedDuration, String status, Date creationDate) {
+                   String estimatedDuration, char status, Date creationDate) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -26,6 +27,8 @@ public class Service {
         this.status = status;
         this.creationDate = creationDate;
     }
+
+    // Getters y Setters
 
     public int getId() {
         return id;
@@ -75,11 +78,11 @@ public class Service {
         this.estimatedDuration = estimatedDuration;
     }
 
-    public String getStatus() {
+    public char getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(char status) {
         this.status = status;
     }
 
