@@ -26,11 +26,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestParam String email, @RequestParam String password) {
         User user = authService.authenticate(email, password);
+        
         if (user == null) {
             return ResponseEntity.status(401).build();
         }
         
         user.setPassword(null);
+        
         return ResponseEntity.ok(user);
     }
 }
