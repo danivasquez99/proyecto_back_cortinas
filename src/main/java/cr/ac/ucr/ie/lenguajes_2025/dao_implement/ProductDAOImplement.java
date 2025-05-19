@@ -1,9 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package cr.ac.ucr.ie.lenguajes_2025.dao_implement;
-
 
 import cr.ac.ucr.ie.lenguajes_2025.connection.ConnectionDB;
 import cr.ac.ucr.ie.lenguajes_2025.dao.ProductDAO;
@@ -11,23 +6,17 @@ import cr.ac.ucr.ie.lenguajes_2025.domain.Product;
 
 import java.sql.*;
 import java.util.LinkedList;
-/**
- *
- * @author Tony
- */
-
 
 public class ProductDAOImplement implements ProductDAO {
 
     @Override
     public LinkedList<Product> getAll() {
         LinkedList<Product> productList = new LinkedList<>();
-
-        String sql = "SELECT idProduct, name, details, price, stock, imageUrl, entryDate, created_at FROM product";
+        String sql = "{CALL sp_get_all_product()}";
 
         try (Connection cn = ConnectionDB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = cn.prepareCall(sql);
+             ResultSet rs = cs.executeQuery()) {
 
             while (rs.next()) {
                 Product product = new Product();
@@ -39,7 +28,6 @@ public class ProductDAOImplement implements ProductDAO {
                 product.setImageUrl(rs.getString("imageUrl"));
                 product.setEntryDate(rs.getDate("entryDate"));
                 product.setCreatedAt(rs.getTimestamp("created_at"));
-
                 productList.add(product);
             }
 
@@ -52,19 +40,19 @@ public class ProductDAOImplement implements ProductDAO {
 
     @Override
     public void insert(Product product) {
-        String sql = "INSERT INTO product (name, details, price, stock, imageUrl, entryDate) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "{CALL sp_insert_product(?, ?, ?, ?, ?, ?)}";
 
         try (Connection cn = ConnectionDB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
+             CallableStatement cs = cn.prepareCall(sql)) {
 
-            ps.setString(1, product.getName());
-            ps.setString(2, product.getDetails());
-            ps.setFloat(3, product.getPrice());
-            ps.setInt(4, product.getStock());
-            ps.setString(5, product.getImageUrl());
-            ps.setDate(6, product.getEntryDate());
+            cs.setString(1, product.getName());
+            cs.setString(2, product.getDetails());
+            cs.setFloat(3, product.getPrice());
+            cs.setInt(4, product.getStock());
+            cs.setString(5, product.getImageUrl());
+            cs.setDate(6, product.getEntryDate());
 
-            ps.executeUpdate();
+            cs.executeUpdate();
 
         } catch (SQLException e) {
             System.err.println("Error al insertar producto: " + e.getMessage());
@@ -73,20 +61,20 @@ public class ProductDAOImplement implements ProductDAO {
 
     @Override
     public void update(Product product) {
-        String sql = "UPDATE product SET name=?, details=?, price=?, stock=?, imageUrl=?, entryDate=? WHERE idProduct=?";
+        String sql = "{CALL sp_update_product(?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection cn = ConnectionDB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
+             CallableStatement cs = cn.prepareCall(sql)) {
 
-            ps.setString(1, product.getName());
-            ps.setString(2, product.getDetails());
-            ps.setFloat(3, product.getPrice());
-            ps.setInt(4, product.getStock());
-            ps.setString(5, product.getImageUrl());
-            ps.setDate(6, product.getEntryDate());
-            ps.setInt(7, product.getIdProduct());
+            cs.setInt(1, product.getIdProduct());
+            cs.setString(2, product.getName());
+            cs.setString(3, product.getDetails());
+            cs.setFloat(4, product.getPrice());
+            cs.setInt(5, product.getStock());
+            cs.setString(6, product.getImageUrl());
+            cs.setDate(7, product.getEntryDate());
 
-            ps.executeUpdate();
+            cs.executeUpdate();
 
         } catch (SQLException e) {
             System.err.println("Error al actualizar producto: " + e.getMessage());
@@ -95,13 +83,13 @@ public class ProductDAOImplement implements ProductDAO {
 
     @Override
     public void deleteById(Integer idProduct) {
-        String sql = "DELETE FROM product WHERE idProduct=?";
+        String sql = "{CALL sp_delete_product_by_id(?)}";
 
         try (Connection cn = ConnectionDB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
+             CallableStatement cs = cn.prepareCall(sql)) {
 
-            ps.setInt(1, idProduct);
-            ps.executeUpdate();
+            cs.setInt(1, idProduct);
+            cs.executeUpdate();
 
         } catch (SQLException e) {
             System.err.println("Error al eliminar producto: " + e.getMessage());
@@ -111,13 +99,13 @@ public class ProductDAOImplement implements ProductDAO {
     @Override
     public Product findById(Integer idProduct) {
         Product product = null;
-        String sql = "SELECT idProduct, name, details, price, stock, imageUrl, entryDate, created_at FROM product WHERE idProduct=?";
+        String sql = "{CALL sp_find_product_by_id(?)}";
 
         try (Connection cn = ConnectionDB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
+             CallableStatement cs = cn.prepareCall(sql)) {
 
-            ps.setInt(1, idProduct);
-            ResultSet rs = ps.executeQuery();
+            cs.setInt(1, idProduct);
+            ResultSet rs = cs.executeQuery();
 
             if (rs.next()) {
                 product = new Product();

@@ -6,9 +6,7 @@ package cr.ac.ucr.ie.lenguajes_2025.services;
 
 import cr.ac.ucr.ie.lenguajes_2025.dao_implement.ProductDAOImplement;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Product;
-import cr.ac.ucr.ie.lenguajes_2025.domain.Service;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  *

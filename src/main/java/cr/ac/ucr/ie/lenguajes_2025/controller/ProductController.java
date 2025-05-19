@@ -8,6 +8,7 @@ import cr.ac.ucr.ie.lenguajes_2025.domain.Product;
 import cr.ac.ucr.ie.lenguajes_2025.services.ProductServices;
 import java.util.LinkedList;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ProductController {
 
     private final ProductServices productServices = new ProductServices();
