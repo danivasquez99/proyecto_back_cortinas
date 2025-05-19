@@ -3,138 +3,126 @@ package cr.ac.ucr.ie.lenguajes_2025.dao_implement;
 import cr.ac.ucr.ie.lenguajes_2025.connection.ConnectionDB;
 import cr.ac.ucr.ie.lenguajes_2025.dao.ServiceDAO;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Service;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.LinkedList;
 
-/**
- *
- * @author Angel
- */
 public class ServiceDAOImplement implements ServiceDAO {
+
+    private static final String SELECT_ALL = "SELECT * FROM service";
+    private static final String INSERT = "INSERT INTO service (name, category, description, estimatedCost, estimatedDuration, status, created_at, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE = "UPDATE service SET name=?, category=?, description=?, estimatedCost=?, estimatedDuration=?, status=?, imageUrl=? WHERE idService=?";
+    private static final String DELETE = "DELETE FROM service WHERE idService=?";
+    private static final String FIND_BY_ID = "SELECT * FROM service WHERE idService=?";
 
     @Override
     public LinkedList<Service> getAll() {
         LinkedList<Service> services = new LinkedList<>();
 
-        String sql = "SELECT id, name, category, description, estimatedCost, estimatedDuration, status, creationDate FROM service WHERE status = 'Available'";
-
-        try (Connection cn = ConnectionDB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql);
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(SELECT_ALL);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Service service = new Service();
-                service.setId(rs.getInt("id"));
-                service.setName(rs.getString("name"));
-                service.setCategory(rs.getString("category"));
-                service.setDescription(rs.getString("description"));
-                service.setEstimatedCost(rs.getFloat("estimatedCost"));
-                service.setEstimatedDuration(rs.getString("estimatedDuration"));
-                service.setStatus(rs.getString("status"));
-                service.setCreationDate(rs.getDate("creationDate"));
-
-                services.add(service);
+                Service s = new Service(
+                        rs.getInt("idService"),
+                        rs.getString("name"),
+                        rs.getString("category"),
+                        rs.getString("description"),
+                        rs.getFloat("estimatedCost"),
+                        rs.getString("estimatedDuration"),
+                        rs.getString("status"),
+                        rs.getDate("created_at"),
+                        rs.getString("imageUrl")
+                );
+                services.add(s);
             }
-
         } catch (SQLException e) {
-            System.err.println("Error al obtener los servicios: " + e.getMessage());
+            System.out.println("Error en getAll: " + e.getMessage());
         }
 
         return services;
     }
 
     @Override
-    public void insert(Service service) {
-        String sql = "INSERT INTO service (id, name, category, description, estimatedCost, estimatedDuration, status, creationDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public void insert(Service s) {
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(INSERT)) {
 
-        try (Connection cn = ConnectionDB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
-
-            ps.setInt(1, service.getId());
-            ps.setString(2, service.getName());
-            ps.setString(3, service.getCategory());
-            ps.setString(4, service.getDescription());
-            ps.setFloat(5, service.getEstimatedCost());
-            ps.setString(6, service.getEstimatedDuration());
-            ps.setString(7, service.getStatus());
-            ps.setDate(8, new Date(service.getCreationDate().getTime()));
+            ps.setString(1, s.getName());
+            ps.setString(2, s.getCategory());
+            ps.setString(3, s.getDescription());
+            ps.setFloat(4, s.getEstimatedCost());
+            ps.setString(5, s.getEstimatedDuration());
+            ps.setString(6, s.getStatus());
+            ps.setDate(7, s.getCreationDate());
+            ps.setString(8, s.getImageUrl());
 
             ps.executeUpdate();
-
         } catch (SQLException e) {
-            System.err.println("Error al insertar servicio: " + e.getMessage());
+            System.out.println("Error en insert: " + e.getMessage());
         }
     }
 
     @Override
-    public void update(Service service) {
-        String sql = "UPDATE service SET name=?, category=?, description=?, estimatedCost=?, estimatedDuration=?, status=? WHERE id=?";
+    public void update(Service s) {
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(UPDATE)) {
 
-        try (Connection cn = ConnectionDB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
-
-            ps.setString(1, service.getName());
-            ps.setString(2, service.getCategory());
-            ps.setString(3, service.getDescription());
-            ps.setFloat(4, service.getEstimatedCost());
-            ps.setString(5, service.getEstimatedDuration());
-            ps.setString(6, service.getStatus());
-            ps.setInt(7, service.getId());
+            ps.setString(1, s.getName());
+            ps.setString(2, s.getCategory());
+            ps.setString(3, s.getDescription());
+            ps.setFloat(4, s.getEstimatedCost());
+            ps.setString(5, s.getEstimatedDuration());
+            ps.setString(6, s.getStatus());
+            ps.setString(7, s.getImageUrl());
+            ps.setInt(8, s.getId());
 
             ps.executeUpdate();
-
         } catch (SQLException e) {
-            System.err.println("Error al actualizar servicio: " + e.getMessage());
+            System.out.println("Error en update: " + e.getMessage());
         }
     }
 
     @Override
     public void deleteById(Integer id) {
-        String sql = "UPDATE service SET status='Not Available' WHERE id=?";
-
-        try (Connection cn = ConnectionDB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(DELETE)) {
 
             ps.setInt(1, id);
             ps.executeUpdate();
-
         } catch (SQLException e) {
-            System.err.println("Error al eliminar servicio: " + e.getMessage());
+            System.out.println("Error en deleteById: " + e.getMessage());
         }
     }
 
     @Override
     public Service findById(Integer id) {
-        Service service = null;
+        Service s = null;
 
-        String sql = "SELECT id, name, category, description, estimatedCost, estimatedDuration, status, creationDate FROM service WHERE id=?";
-
-        try (Connection cn = ConnectionDB.getConnection();
-             PreparedStatement ps = cn.prepareStatement(sql)) {
+        try (Connection conn = ConnectionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(FIND_BY_ID)) {
 
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                service = new Service();
-                service.setId(rs.getInt("id"));
-                service.setName(rs.getString("name"));
-                service.setCategory(rs.getString("category"));
-                service.setDescription(rs.getString("description"));
-                service.setEstimatedCost(rs.getFloat("estimatedCost"));
-                service.setEstimatedDuration(rs.getString("estimatedDuration"));
-                service.setStatus(rs.getString("status"));
-                service.setCreationDate(rs.getDate("creationDate"));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    s = new Service(
+                            rs.getInt("idService"),
+                            rs.getString("name"),
+                            rs.getString("category"),
+                            rs.getString("description"),
+                            rs.getFloat("estimatedCost"),
+                            rs.getString("estimatedDuration"),
+                            rs.getString("status"),
+                            rs.getDate("created_at"),
+                            rs.getString("imageUrl")
+                    );
+                }
             }
-
         } catch (SQLException e) {
-            System.err.println("Error al buscar servicio: " + e.getMessage());
+            System.out.println("Error en findById: " + e.getMessage());
         }
 
-        return service;
+        return s;
     }
 }
