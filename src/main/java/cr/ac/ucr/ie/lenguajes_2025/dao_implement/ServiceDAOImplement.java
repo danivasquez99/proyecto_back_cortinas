@@ -25,15 +25,16 @@ public class ServiceDAOImplement implements ServiceDAO {
 
             while (rs.next()) {
                 Service s = new Service(
-                        rs.getInt("idService"),
-                        rs.getString("name"),
-                        rs.getString("category"),
-                        rs.getString("description"),
-                        rs.getFloat("estimatedCost"),
-                        rs.getString("estimatedDuration"),
-                        rs.getString("status").charAt(0),
-                        rs.getDate("created_at")
-                );
+    rs.getInt("idService"),
+    rs.getString("name"),
+    rs.getString("category"),
+    rs.getString("description"),
+    rs.getFloat("estimatedCost"),
+    rs.getString("estimatedDuration"),
+    rs.getString("status").charAt(0),
+    rs.getDate("created_at"),
+    rs.getString("imageUrl") // ✅ importante
+);
                 services.add(s);
             }
         } catch (SQLException e) {
@@ -104,15 +105,16 @@ public class ServiceDAOImplement implements ServiceDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     s = new Service(
-                            rs.getInt("idService"),
-                            rs.getString("name"),
-                            rs.getString("category"),
-                            rs.getString("description"),
-                            rs.getFloat("estimatedCost"),
-                            rs.getString("estimatedDuration"),
-                            rs.getString("status").charAt(0),
-                            rs.getDate("created_at")
-                    );
+    rs.getInt("idService"),
+    rs.getString("name"),
+    rs.getString("category"),
+    rs.getString("description"),
+    rs.getFloat("estimatedCost"),
+    rs.getString("estimatedDuration"),
+    rs.getString("status").charAt(0),
+    rs.getDate("created_at"),
+    rs.getString("imageUrl") // ✅ importante
+);
                 }
             }
         } catch (SQLException e) {

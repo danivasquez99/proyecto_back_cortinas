@@ -12,12 +12,13 @@ public class Service {
     private String estimatedDuration; // Ej: "02:30:00"
     private char status; // 'A' = Available, 'N' = Not Available
     private Date creationDate;
+    private String imageUrl;
+
 
     public Service() {
     }
 
-    public Service(int id, String name, String category, String description, float estimatedCost,
-                   String estimatedDuration, char status, Date creationDate) {
+    public Service(int id, String name, String category, String description, float estimatedCost, String estimatedDuration, char status, Date creationDate, String imageUrl) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -26,7 +27,10 @@ public class Service {
         this.estimatedDuration = estimatedDuration;
         this.status = status;
         this.creationDate = creationDate;
+        this.imageUrl = imageUrl;
     }
+    
+    
 
     // Getters y Setters
 
@@ -93,4 +97,14 @@ public class Service {
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+    
+    
 }
