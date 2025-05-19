@@ -48,4 +48,9 @@ spring.log
 .mvn/
 !**/src/main/**/.gitkeep
 !**/src/test/**/.gitkeep
+<<<<<<< HEAD
 nbactions.xml 
+=======
+"nbactions.xml" 
+"git" 
+>>>>>>> dani
