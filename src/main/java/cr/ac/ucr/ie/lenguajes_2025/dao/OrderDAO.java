@@ -4,10 +4,12 @@
  */
 package cr.ac.ucr.ie.lenguajes_2025.dao;
 
+import cr.ac.ucr.ie.lenguajes_2025.domain.Order;
+
 /**
  *
  * @author Tony
  */
-public interface OrderDAO extends CRUD<Object>{
+public interface OrderDAO extends CRUD<Order>{
     
 }

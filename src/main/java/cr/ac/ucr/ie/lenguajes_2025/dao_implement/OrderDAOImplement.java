@@ -10,13 +10,11 @@ import java.util.LinkedList;
 public class OrderDAOImplement implements OrderDAO {
 
     @Override
-    public LinkedList<Object> getAll() {
-        LinkedList<Object> orderList = new LinkedList<>();
+    public LinkedList<Order> getAll() {
+        LinkedList<Order> orderList = new LinkedList<>();
         String sql = "{CALL sp_get_all_order()}";
 
-        try (Connection cn = ConnectionDB.getConnection();
-             CallableStatement cs = cn.prepareCall(sql);
-             ResultSet rs = cs.executeQuery()) {
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql); ResultSet rs = cs.executeQuery()) {
 
             while (rs.next()) {
                 Order order = new Order();
@@ -28,7 +26,7 @@ public class OrderDAOImplement implements OrderDAO {
                 order.setCreatedAt(rs.getDate("created_at"));
                 orderList.add(order);
             }
-
+            System.out.println("Cantidad de órdenes: " + orderList.size());
         } catch (SQLException e) {
             System.err.println("Error al obtener órdenes: " + e.getMessage());
         }
@@ -37,12 +35,10 @@ public class OrderDAOImplement implements OrderDAO {
     }
 
     @Override
-    public void insert(Object t) {
-        Order order = (Order) t;
+    public void insert(Order order) {
         String sql = "{CALL sp_insert_order(?, ?, ?, ?)}";
 
-        try (Connection cn = ConnectionDB.getConnection();
-             CallableStatement cs = cn.prepareCall(sql)) {
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql)) {
 
             cs.setString(1, order.getStatus());
             cs.setDate(2, order.getOrderDate());
@@ -57,12 +53,10 @@ public class OrderDAOImplement implements OrderDAO {
     }
 
     @Override
-    public void update(Object t) {
-        Order order = (Order) t;
+    public void update(Order order) {
         String sql = "{CALL sp_update_order(?, ?, ?, ?, ?)}";
 
-        try (Connection cn = ConnectionDB.getConnection();
-             CallableStatement cs = cn.prepareCall(sql)) {
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql)) {
 
             cs.setInt(1, order.getIdOrder());
             cs.setString(2, order.getStatus());
@@ -81,8 +75,7 @@ public class OrderDAOImplement implements OrderDAO {
     public void deleteById(Integer idOrder) {
         String sql = "{CALL sp_delete_order_by_id(?)}";
 
-        try (Connection cn = ConnectionDB.getConnection();
-             CallableStatement cs = cn.prepareCall(sql)) {
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql)) {
 
             cs.setInt(1, idOrder);
             cs.executeUpdate();
@@ -93,14 +86,13 @@ public class OrderDAOImplement implements OrderDAO {
     }
 
     @Override
-    public Object findById(Integer idOrder) {
+    public Order findById(Integer t) {
         Order order = null;
         String sql = "{CALL sp_find_order_by_id(?)}";
 
-        try (Connection cn = ConnectionDB.getConnection();
-             CallableStatement cs = cn.prepareCall(sql)) {
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql)) {
 
-            cs.setInt(1, idOrder);
+            cs.setInt(1, t);
             ResultSet rs = cs.executeQuery();
 
             if (rs.next()) {
@@ -119,4 +111,5 @@ public class OrderDAOImplement implements OrderDAO {
 
         return order;
     }
+
 }
