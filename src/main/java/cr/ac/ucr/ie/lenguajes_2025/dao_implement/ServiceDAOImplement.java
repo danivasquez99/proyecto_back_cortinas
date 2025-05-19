@@ -31,7 +31,7 @@ public class ServiceDAOImplement implements ServiceDAO {
                         rs.getString("description"),
                         rs.getFloat("estimatedCost"),
                         rs.getString("estimatedDuration"),
-                        rs.getString("status"),
+                        rs.getString("status").charAt(0),
                         rs.getDate("created_at"),
                         rs.getString("imageUrl")
                 );
@@ -54,7 +54,7 @@ public class ServiceDAOImplement implements ServiceDAO {
             ps.setString(3, s.getDescription());
             ps.setFloat(4, s.getEstimatedCost());
             ps.setString(5, s.getEstimatedDuration());
-            ps.setString(6, s.getStatus());
+            ps.setString(6, String.valueOf(s.getStatus()));
             ps.setDate(7, s.getCreationDate());
             ps.setString(8, s.getImageUrl());
 
@@ -74,7 +74,7 @@ public class ServiceDAOImplement implements ServiceDAO {
             ps.setString(3, s.getDescription());
             ps.setFloat(4, s.getEstimatedCost());
             ps.setString(5, s.getEstimatedDuration());
-            ps.setString(6, s.getStatus());
+            ps.setString(6, String.valueOf(s.getStatus()));
             ps.setString(7, s.getImageUrl());
             ps.setInt(8, s.getId());
 
@@ -113,7 +113,7 @@ public class ServiceDAOImplement implements ServiceDAO {
                             rs.getString("description"),
                             rs.getFloat("estimatedCost"),
                             rs.getString("estimatedDuration"),
-                            rs.getString("status"),
+                            rs.getString("status").charAt(0),
                             rs.getDate("created_at"),
                             rs.getString("imageUrl")
                     );

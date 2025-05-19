@@ -3,21 +3,22 @@ package cr.ac.ucr.ie.lenguajes_2025.domain;
 import java.sql.Date;
 
 public class Service {
+
     private int id;
     private String name;
     private String category;
     private String description;
     private float estimatedCost;
     private String estimatedDuration;
-    private String status; // Cambiado de char a String
+    private char status; // 'A' = Available, 'N' = Not Available
     private Date creationDate;
-    private String imageUrl; // ✅ NUEVO CAMPO agregado
+    private String imageUrl;
 
     public Service() {
     }
 
     public Service(int id, String name, String category, String description, float estimatedCost,
-                   String estimatedDuration, String status, Date creationDate, String imageUrl) {
+                   String estimatedDuration, char status, Date creationDate, String imageUrl) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -29,32 +30,75 @@ public class Service {
         this.imageUrl = imageUrl;
     }
 
-    // Getters y Setters
+    public int getId() {
+        return id;
+    }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getCategory() {
+        return category;
+    }
 
-    public float getEstimatedCost() { return estimatedCost; }
-    public void setEstimatedCost(float estimatedCost) { this.estimatedCost = estimatedCost; }
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
-    public String getEstimatedDuration() { return estimatedDuration; }
-    public void setEstimatedDuration(String estimatedDuration) { this.estimatedDuration = estimatedDuration; }
+    public String getDescription() {
+        return description;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public Date getCreationDate() { return creationDate; }
-    public void setCreationDate(Date creationDate) { this.creationDate = creationDate; }
+    public float getEstimatedCost() {
+        return estimatedCost;
+    }
 
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setEstimatedCost(float estimatedCost) {
+        this.estimatedCost = estimatedCost;
+    }
+
+    public String getEstimatedDuration() {
+        return estimatedDuration;
+    }
+
+    public void setEstimatedDuration(String estimatedDuration) {
+        this.estimatedDuration = estimatedDuration;
+    }
+
+    public char getStatus() {
+        return status;
+    }
+
+    public void setStatus(char status) {
+        this.status = status;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
