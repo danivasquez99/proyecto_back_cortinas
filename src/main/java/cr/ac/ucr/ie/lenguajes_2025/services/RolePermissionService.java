@@ -16,7 +16,6 @@ import java.util.LinkedList;
  */
 
 public class RolePermissionService {
-    
     private final RolePermissionDAOImplement rolePermissionDAO = new RolePermissionDAOImplement();
     private final PermissionDAOImplement permissionDAO = new PermissionDAOImplement();
 
