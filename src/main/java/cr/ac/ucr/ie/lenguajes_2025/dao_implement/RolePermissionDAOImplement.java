@@ -19,42 +19,35 @@ public class RolePermissionDAOImplement implements RolePermissionDAO{
     
     @Override
     public LinkedList<RolePermission> getAll() {
-        LinkedList<RolePermission> list = new LinkedList<>();
-        String sql = "SELECT role_id, permission_id FROM role_permission";
+        LinkedList<RolePermission> rolePermissions = new LinkedList<>();
+        String sql = "{CALL sp_get_all_role_permissions()}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql);
+             ResultSet rs = cs.executeQuery()) {
             
             while (rs.next()) {
-                RolePermission RolePerm = new RolePermission();
-                RolePerm.setRoleId(rs.getInt("role_id"));
-                RolePerm.setPermissionId(rs.getInt("permission_id"));
-                list.add(RolePerm);
+                RolePermission rp = new RolePermission();
+                rp.setRoleId(rs.getInt("role_id"));
+                rp.setPermissionId(rs.getInt("permission_id"));
+                rolePermissions.add(rp);
             }
         } catch (SQLException e) {
-            System.err.println("Error al obtener role_permission: " + e.getMessage());
+            System.err.println("Error al obtener todos los role_permissions: " + e.getMessage());
         }
         
-        return list;
+        return rolePermissions;
     }
 
-     @Override
+    @Override
     public void insert(RolePermission rolePermission) {
-        
-// Evita duplicados
-        if (exists(rolePermission.getRoleId(), rolePermission.getPermissionId())) {
-            System.out.println("La relación ya existe.");
-            return;
-        }
-        
-        String sql = "INSERT INTO role_permission (role_id, permission_id) VALUES (?, ?)";
+        String sql = "{CALL sp_insert_role_permission(?, ?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, rolePermission.getRoleId());
-            ps.setInt(2, rolePermission.getPermissionId());
-            ps.executeUpdate();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, rolePermission.getRoleId());
+            cs.setInt(2, rolePermission.getPermissionId());
+            cs.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al insertar role_permission: " + e.getMessage());
         }
@@ -63,13 +56,13 @@ public class RolePermissionDAOImplement implements RolePermissionDAO{
     @Override
     public void update(RolePermission entity) {
         // No aplica porque normalmente no se actualizan claves compuestas
-        throw new UnsupportedOperationException("Update no soportado para RolePermission.");
+        throw new UnsupportedOperationException("No soportado para RolePermission");
     }
 
     @Override
     public void deleteById(Integer id) {
         // No aplica porque la tabla tiene clave compuesta, no un solo id
-        throw new UnsupportedOperationException("deleteById no soportado para RolePermission.");
+        throw new UnsupportedOperationException("No soportado para RolePermission");
     }
     
     @Override
@@ -79,86 +72,86 @@ public class RolePermissionDAOImplement implements RolePermissionDAO{
     }
     
     @Override
-    public LinkedList<RolePermission> findByRoleId(int roleId) {
-        LinkedList<RolePermission> list = new LinkedList<>();
-        String sql = "SELECT role_id, permission_id FROM role_permission WHERE role_id = ?";
+    public LinkedList<RolePermission> findByRoleId(Integer roleId) {
+        LinkedList<RolePermission> rolePermissions = new LinkedList<>();
+        String sql = "{CALL sp_find_role_permissions_by_role(?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roleId);
-            ResultSet rs = ps.executeQuery();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, roleId);
+            ResultSet rs = cs.executeQuery();
             
             while (rs.next()) {
-                RolePermission RolePerm = new RolePermission();
-                RolePerm.setRoleId(rs.getInt("role_id"));
-                RolePerm.setPermissionId(rs.getInt("permission_id"));
-                list.add(RolePerm);
+                RolePermission rp = new RolePermission();
+                rp.setRoleId(rs.getInt("role_id"));
+                rp.setPermissionId(rs.getInt("permission_id"));
+                rolePermissions.add(rp);
             }
         } catch (SQLException e) {
-            System.err.println("Error al buscar permisos por role_id: " + e.getMessage());
+            System.err.println("Error al buscar role_permissions por roleId: " + e.getMessage());
         }
         
-         return list;
+        return rolePermissions;
     }
     
     @Override
-    public LinkedList<RolePermission> findByPermissionId(int permissionId) {
-        LinkedList<RolePermission> list = new LinkedList<>();
-        String sql = "SELECT role_id, permission_id FROM role_permission WHERE permission_id = ?";
+    public LinkedList<RolePermission> findByPermissionId(Integer permissionId) {
+        LinkedList<RolePermission> rolePermissions = new LinkedList<>();
+        String sql = "{CALL sp_find_role_permissions_by_permission(?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, permissionId);
-            ResultSet rs = ps.executeQuery();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, permissionId);
+            ResultSet rs = cs.executeQuery();
             
             while (rs.next()) {
-                RolePermission RolePerm = new RolePermission();
-                RolePerm.setRoleId(rs.getInt("role_id"));
-                RolePerm.setPermissionId(rs.getInt("permission_id"));
-                list.add(RolePerm);
+                RolePermission rp = new RolePermission();
+                rp.setRoleId(rs.getInt("role_id"));
+                rp.setPermissionId(rs.getInt("permission_id"));
+                rolePermissions.add(rp);
             }
         } catch (SQLException e) {
-            System.err.println("Error al buscar roles por permission_id: " + e.getMessage());
+            System.err.println("Error al buscar role_permissions por permissionId: " + e.getMessage());
         }
         
-        return list;
+        return rolePermissions;
     }
     
     @Override
     public void deleteByRoleId(int roleId) {
-    String sql = "DELETE FROM role_permission WHERE role_id = ?";
-    
-    try (Connection conn = ConnectionDB.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setInt(1, roleId);
-        stmt.executeUpdate();
-    } catch (SQLException e) {
-        throw new RuntimeException("Error deleting by roleId", e);
-    }
-}
-
-@Override
-public void deleteByPermissionId(int permissionId) {
-    String sql = "DELETE FROM role_permission WHERE permission_id = ?";
-    
-    try (Connection conn = ConnectionDB.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setInt(1, permissionId);
-        stmt.executeUpdate();
-    } catch (SQLException e) {
-        throw new RuntimeException("Error deleting by permissionId", e);
-    }
-}
-
-@Override
-    public void delete(int roleId, int permissionId) {
-        String sql = "DELETE FROM role_permission WHERE role_id = ? AND permission_id = ?";
+        String sql = "{CALL sp_delete_role_permissions_by_role(?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roleId);
-            ps.setInt(2, permissionId);
-            ps.executeUpdate();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, roleId);
+            cs.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar role_permissions por roleId: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteByPermissionId(int permissionId) {
+        String sql = "{CALL sp_delete_role_permissions_by_permission(?)}";
+        
+        try (Connection conn = ConnectionDB.getConnection();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, permissionId);
+            cs.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar role_permissions por permissionId: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void delete(Integer roleId, Integer permissionId) {
+        String sql = "{CALL sp_delete_role_permission(?, ?)}";
+        
+        try (Connection conn = ConnectionDB.getConnection();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, roleId);
+            cs.setInt(2, permissionId);
+            cs.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al eliminar role_permission: " + e.getMessage());
         }
@@ -166,13 +159,13 @@ public void deleteByPermissionId(int permissionId) {
     
     // Verifica si ya existe la relación rol-permiso
     public boolean exists(int roleId, int permissionId) {
-        String sql = "SELECT COUNT(*) FROM role_permission WHERE role_id = ? AND permission_id = ?";
+        String sql = "{CALL sp_exists_role_permission(?, ?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roleId);
-            ps.setInt(2, permissionId);
-            ResultSet rs = ps.executeQuery();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, roleId);
+            cs.setInt(2, permissionId);
+            ResultSet rs = cs.executeQuery();
             
             if (rs.next()) {
                 return rs.getInt(1) > 0;

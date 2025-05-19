@@ -14,9 +14,9 @@ import java.util.LinkedList;
 
 public interface UserRoleDAO extends CRUD<UserRole> {
     // Métodos extra para relaciones
-    LinkedList<UserRole> findByUserId(int userId);
-    LinkedList<UserRole> findByRoleId(int roleId);
+    LinkedList<UserRole> findByUserId(Integer userId);
+    LinkedList<UserRole> findByRoleId(Integer roleId);
     void deleteByUserId(int userId);
     void deleteByRoleId(int roleId);
-    void delete(int userId, int roleId);
+    void delete(Integer userId, Integer roleId);
 }

@@ -20,11 +20,11 @@ public class PermissionDAOImplement implements PermissionDAO {
     @Override
     public LinkedList<Permission> getAll() {
         LinkedList<Permission> permissions = new LinkedList<>();
-        String sql = "SELECT id, name FROM permission";
+        String sql = "{CALL sp_get_all_permissions()}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql);
+             ResultSet rs = cs.executeQuery()) {
             
             while (rs.next()) {
                 Permission permission = new Permission();
@@ -35,31 +35,32 @@ public class PermissionDAOImplement implements PermissionDAO {
         } catch (SQLException e) {
             System.err.println("Error al obtener permisos: " + e.getMessage());
         }
+        
         return permissions;
     }
 
     @Override
     public void insert(Permission permission) {
-        String sql = "INSERT INTO permission (name) VALUES (?)";
+        String sql = "{CALL sp_insert_permission(?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, permission.getName());
-            ps.executeUpdate();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setString(1, permission.getName());
+            cs.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al insertar permiso: " + e.getMessage());
         }
     }
 
-    @Override
+     @Override
     public void update(Permission permission) {
-        String sql = "UPDATE permission SET name = ? WHERE id = ?";
+        String sql = "{CALL sp_update_permission(?, ?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, permission.getName());
-            ps.setInt(2, permission.getId());
-            ps.executeUpdate();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, permission.getId());
+            cs.setString(2, permission.getName());
+            cs.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al actualizar permiso: " + e.getMessage());
         }
@@ -67,16 +68,12 @@ public class PermissionDAOImplement implements PermissionDAO {
     
     @Override
     public void deleteById(Integer id) {
-        
-        // Elimina relaciones antes de eliminar el permiso
-        new RolePermissionDAOImplement().deleteByPermissionId(id);
-
-        String sql = "DELETE FROM permission WHERE id = ?";
+        String sql = "{CALL sp_delete_permission(?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, id);
+            cs.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al eliminar permiso: " + e.getMessage());
         }
@@ -84,45 +81,44 @@ public class PermissionDAOImplement implements PermissionDAO {
 
     @Override
     public Permission findById(Integer id) {
-        String sql = "SELECT id, name FROM permission WHERE id = ?";
+        String sql = "{CALL sp_find_permission_by_id(?)}";
+        Permission permission = null;
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, id);
+            ResultSet rs = cs.executeQuery();
             
             if (rs.next()) {
-                Permission permission = new Permission();
+                permission = new Permission();
                 permission.setId(rs.getInt("id"));
                 permission.setName(rs.getString("name"));
-                return permission;
             }
         } catch (SQLException e) {
             System.err.println("Error al buscar permiso por id: " + e.getMessage());
         }
         
-        return null;
+        return permission;
     }
     
+    @Override
     public Permission findByName(String name) {
-    String sql = "SELECT * FROM permission WHERE name = ?";
-    
-    try (Connection conn = ConnectionDB.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, name);
-        ResultSet rs = ps.executeQuery();
-       
-        if (rs.next()) {
-            Permission permission = new Permission();
-            permission.setId(rs.getInt("id"));
-            permission.setName(rs.getString("name"));
-            
-            return permission;
+        String sql = "{CALL sp_find_permission_by_name(?)}";
+        Permission permission = null;
+        
+        try (Connection conn = ConnectionDB.getConnection();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setString(1, name);
+            ResultSet rs = cs.executeQuery();
+            if (rs.next()) {
+                permission = new Permission();
+                permission.setId(rs.getInt("id"));
+                permission.setName(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al buscar permiso por nombre: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        System.err.println("Error al buscar permiso por nombre: " + e.getMessage());
-    }
-    
-        return null;
+        
+        return permission;
     }
 }

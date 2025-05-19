@@ -19,42 +19,35 @@ public class UserRoleDAOImplement implements UserRoleDAO {
     
     @Override
     public LinkedList<UserRole> getAll() {
-        LinkedList<UserRole> list = new LinkedList<>();
-        String sql = "SELECT user_id, role_id FROM user_role";
-       
+        LinkedList<UserRole> userRoles = new LinkedList<>();
+        String sql = "{CALL sp_get_all_user_roles()}";
+        
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-           
+             CallableStatement cs = conn.prepareCall(sql);
+             ResultSet rs = cs.executeQuery()) {
+            
             while (rs.next()) {
                 UserRole userRole = new UserRole();
                 userRole.setUserId(rs.getInt("user_id"));
                 userRole.setRoleId(rs.getInt("role_id"));
-                list.add(userRole);
+                userRoles.add(userRole);
             }
         } catch (SQLException e) {
-            System.err.println("Error al obtener user_role: " + e.getMessage());
+            System.err.println("Error al obtener todos los user_roles: " + e.getMessage());
         }
         
-        return list;
+        return userRoles;
     }
     
     @Override
     public void insert(UserRole userRole) {
-        
-        // Evita duplicados
-        if (exists(userRole.getUserId(), userRole.getRoleId())) {
-            System.out.println("La relación ya existe.");
-            return;
-        }
-        
-        String sql = "INSERT INTO user_role (user_id, role_id) VALUES (?, ?)";
+        String sql = "{CALL sp_insert_user_role(?, ?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userRole.getUserId());
-            ps.setInt(2, userRole.getRoleId());
-            ps.executeUpdate();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, userRole.getUserId());
+            cs.setInt(2, userRole.getRoleId());
+            cs.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al insertar user_role: " + e.getMessage());
         }
@@ -78,59 +71,59 @@ public class UserRoleDAOImplement implements UserRoleDAO {
     }
     
     @Override
-    public LinkedList<UserRole> findByRoleId(int roleId) {
-        LinkedList<UserRole> list = new LinkedList<>();
-        String sql = "SELECT user_id, role_id FROM user_role WHERE role_id = ?";
+    public LinkedList<UserRole> findByRoleId(Integer roleId) {
+        LinkedList<UserRole> userRoles = new LinkedList<>();
+        String sql = "{CALL sp_find_user_roles_by_role(?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roleId);
-            ResultSet rs = ps.executeQuery();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, roleId);
+            ResultSet rs = cs.executeQuery();
            
             while (rs.next()) {
                 UserRole userRole = new UserRole();
                 userRole.setUserId(rs.getInt("user_id"));
                 userRole.setRoleId(rs.getInt("role_id"));
-                list.add(userRole);
+                userRoles.add(userRole);
             }
         } catch (SQLException e) {
-            System.err.println("Error al buscar usuarios por role_id: " + e.getMessage());
+            System.err.println("Error al buscar user_roles por roleId: " + e.getMessage());
         }
         
-        return list;
+        return userRoles;
     }
 
     @Override
-    public LinkedList<UserRole> findByUserId(int userId) {
-        LinkedList<UserRole> list = new LinkedList<>();
-        String sql = "SELECT user_id, role_id FROM user_role WHERE user_id = ?";
+    public LinkedList<UserRole> findByUserId(Integer userId) {
+        LinkedList<UserRole> userRoles = new LinkedList<>();
+        String sql = "{CALL sp_find_user_roles_by_user(?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-           
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, userId);
+            ResultSet rs = cs.executeQuery();
+            
             while (rs.next()) {
                 UserRole userRole = new UserRole();
                 userRole.setUserId(rs.getInt("user_id"));
                 userRole.setRoleId(rs.getInt("role_id"));
-                list.add(userRole);
+                userRoles.add(userRole);
             }
         } catch (SQLException e) {
-            System.err.println("Error al buscar roles por user_id: " + e.getMessage());
+            System.err.println("Error al buscar user_roles por userId: " + e.getMessage());
         }
         
-        return list;
+        return userRoles;
     }
 
     @Override
     public void deleteByUserId(int userId) {
-        String sql = "DELETE FROM user_role WHERE user_id = ?";
+        String sql = "{CALL sp_delete_user_roles_by_user(?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ps.executeUpdate();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, userId);
+            cs.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al eliminar user_role por userId: " + e.getMessage());
         }
@@ -138,26 +131,26 @@ public class UserRoleDAOImplement implements UserRoleDAO {
     
     @Override
     public void deleteByRoleId(int roleId) {
-        String sql = "DELETE FROM user_role WHERE role_id = ?";
+        String sql = "{CALL sp_delete_user_roles_by_role(?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roleId);
-            ps.executeUpdate();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, roleId);
+            cs.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al eliminar user_role por roleId: " + e.getMessage());
         }
     }
 
     @Override
-    public void delete(int userId, int roleId) {
-        String sql = "DELETE FROM user_role WHERE user_id = ? AND role_id = ?";
+    public void delete(Integer userId, Integer roleId) {
+        String sql = "{CALL sp_delete_user_role(?, ?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ps.setInt(2, roleId);
-            ps.executeUpdate();
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, userId);
+            cs.setInt(2, roleId);
+            cs.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al eliminar user_role: " + e.getMessage());
         }
@@ -165,14 +158,13 @@ public class UserRoleDAOImplement implements UserRoleDAO {
     
     // Verifica si ya existe la relación usuario-rol
     public boolean exists(int userId, int roleId) {
-        String sql = "SELECT COUNT(*) FROM user_role WHERE user_id = ? AND role_id = ?";
+        String sql = "{CALL sp_exists_user_role(?, ?)}";
         
         try (Connection conn = ConnectionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ps.setInt(2, roleId);
-            ResultSet rs = ps.executeQuery();
-            
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setInt(1, userId);
+            cs.setInt(2, roleId);
+            ResultSet rs = cs.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1) > 0;
             }

@@ -14,9 +14,9 @@ import java.util.LinkedList;
 
 public interface RolePermissionDAO extends CRUD<RolePermission> {
     // Métodos extra para relaciones
-    LinkedList<RolePermission> findByRoleId(int roleId);
-    LinkedList<RolePermission> findByPermissionId(int permissionId);
+    LinkedList<RolePermission> findByRoleId(Integer roleId);
+    LinkedList<RolePermission> findByPermissionId(Integer permissionId);
     void deleteByRoleId(int roleId);
     void deleteByPermissionId(int permissionId);
-    void delete(int roleId, int permissionId);
+    void delete(Integer roleId, Integer permissionId);
 }
