@@ -3,6 +3,7 @@ package cr.ac.ucr.ie.lenguajes_2025.dao_implement;
 import cr.ac.ucr.ie.lenguajes_2025.connection.ConnectionDB;
 import cr.ac.ucr.ie.lenguajes_2025.dao.UserDAO;
 import cr.ac.ucr.ie.lenguajes_2025.domain.User;
+import cr.ac.ucr.ie.lenguajes_2025.utils.Utils;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -43,7 +44,6 @@ public class UserDAOImplement implements UserDAO {
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
                 user.setIsActive(rs.getString(8) == "1" ? true : false);
-                user.setCreationDate(LocalDate.parse(rs.getString(9)));
 
                 usersList.add(user);
             }
@@ -59,22 +59,18 @@ public class UserDAOImplement implements UserDAO {
     public void insert(User t) {
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO user");
-        sql.append("(idUser, name, birthdate, email, password, ");
-        sql.append("urlProfilePicture, role, creationDate) ");
-        sql.append("VALUES (?,?,?,?,?,?,?,?)");
+        sql.append("(name, birthdate, email, ");
+        sql.append("password, urlProfilePicture) ");
+        sql.append("VALUES (?,?,?,?,?)");
 
         try {
             Connection cn = ConnectionDB.getConnection();
             PreparedStatement ps = cn.prepareStatement(sql.toString());
-            ps.setInt(1, t.getIdUser());
-            ps.setString(2, t.getName());
-            ps.setDate(3, Date.valueOf(t.getBirthdate()));
-            ps.setString(4, t.getEmail());
-            ps.setString(5, t.getPassword());
-            ps.setString(6, t.getUrlProfilePicture());
-            ps.setString(7, t.getRole());
-            ps.setString(8, t.isIsActive() ? "1" : "0");
-            ps.setDate(9, Date.valueOf(t.getCreationDate()));
+            ps.setString(1, t.getName());
+            ps.setDate(2, Date.valueOf(t.getBirthdate()));
+            ps.setString(3, t.getEmail());
+            ps.setString(4, Utils.encryptSHA256(t.getPassword()));
+            ps.setString(5, t.getUrlProfilePicture());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -86,8 +82,8 @@ public class UserDAOImplement implements UserDAO {
     public void update(User t) {
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE user SET ");
-        sql.append("idUser=?, name=?, birthdate=?, email=?, password=?, ");
-        sql.append("urlProfilePicture=?, role=?, isActive=? ");
+        sql.append("idUser=?, name=?, birthdate=?, ");
+        sql.append(" email=?, password=?, urlProfilePicture=? ");
         sql.append("WHERE idUser=?");
 
         try {
@@ -97,11 +93,9 @@ public class UserDAOImplement implements UserDAO {
             ps.setString(2, t.getName());
             ps.setDate(3, Date.valueOf(t.getBirthdate()));
             ps.setString(4, t.getEmail());
-            ps.setString(5, t.getPassword());
+            ps.setString(5, Utils.encryptSHA256(t.getPassword()));
             ps.setString(6, t.getUrlProfilePicture());
-            ps.setString(7, t.getRole());
-            ps.setString(8, t.isIsActive() ? "1" : "0");
-
+            
             ps.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al actualizar usuario: " + e.getMessage());
@@ -130,12 +124,11 @@ public class UserDAOImplement implements UserDAO {
         User user = new User();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT user idUser, name, birthdate, email, password, ");
-        sql.append("urlProfileImage, role, isActive, creationDate");
-        sql.append("WHERE idUser=?");
+        sql.append("SELECT idUser, name, birthdate, email, password, ");
+        sql.append("urlProfileImage, role, isActive ");
+        sql.append("FROM user WHERE idUser=?");
 
         try {
-
             Connection cn = ConnectionDB.getConnection();
             PreparedStatement ps = cn.prepareStatement(sql.toString());
             ps.setInt(1, t);
@@ -144,13 +137,12 @@ public class UserDAOImplement implements UserDAO {
             if (rs.next()) {
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
-                user.setBirthdate(LocalDate.parse(rs.getDate(3).toString()));
+                user.setBirthdate(LocalDate.parse(rs.getString(3)));
                 user.setEmail(rs.getString(4));
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
-                user.setIsActive(rs.getString(8).equals("1") ? true : false);
-                user.setCreationDate(LocalDate.parse(rs.getDate(9).toString()));
+                user.setIsActive(rs.getString(8).equals("1"));
             }
 
         } catch (SQLException e) {
@@ -163,6 +155,42 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public boolean validateExistingEmail(String email) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public User login(String email, String password) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT idUser, name, birthdate, email, password, ");
+        sql.append("urlProfilePicture, role, isActive ");
+        sql.append("FROM user WHERE email=? AND password=?;");
+        
+        User userLogin = new User();
+        String encryptPassword = Utils.encryptSHA256(password);
+        
+        try {
+            Connection cn = ConnectionDB.getConnection();
+            PreparedStatement ps = cn.prepareStatement(sql.toString());
+            ps.setString(1, email);
+            ps.setString(2, encryptPassword);
+            
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                userLogin.setIdUser(rs.getInt(1));
+                userLogin.setName(rs.getString(2));
+                userLogin.setBirthdate(LocalDate.parse(rs.getString(3)));
+                userLogin.setEmail(rs.getString(4));
+                userLogin.setPassword(rs.getString(5));
+                userLogin.setUrlProfilePicture(rs.getString(6));
+                userLogin.setRole(rs.getString(7));
+                userLogin.setIsActive(rs.getString(8).equals("1"));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al cargar usuario: " + e.getMessage());
+        }
+        
+        return userLogin;
     }
 
 }

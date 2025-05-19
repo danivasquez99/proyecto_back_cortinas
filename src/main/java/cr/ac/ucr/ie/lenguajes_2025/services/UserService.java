@@ -34,4 +34,8 @@ public class UserService {
     public static void deleteUser(int userId){
         service.deleteById(userId);
     }
+    
+    public static User login(String email, String password){
+        return service.login(email, password);
+    }
 }
