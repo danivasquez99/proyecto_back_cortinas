@@ -14,12 +14,13 @@ import cr.ac.ucr.ie.lenguajes_2025.domain.UserRole;
 import cr.ac.ucr.ie.lenguajes_2025.domain.RolePermission;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Permission;
 import java.util.LinkedList;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Josías Morales
  */
-
+@Service
 public class AuthService {
     private static UserDAOImplement userDAO = new UserDAOImplement();
     private static UserRoleDAOImplement userRoleDAO = new UserRoleDAOImplement();

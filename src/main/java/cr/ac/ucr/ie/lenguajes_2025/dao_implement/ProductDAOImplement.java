@@ -14,9 +14,7 @@ public class ProductDAOImplement implements ProductDAO {
         LinkedList<Product> productList = new LinkedList<>();
         String sql = "{CALL sp_get_all_product()}";
 
-        try (Connection cn = ConnectionDB.getConnection();
-             CallableStatement cs = cn.prepareCall(sql);
-             ResultSet rs = cs.executeQuery()) {
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql); ResultSet rs = cs.executeQuery()) {
 
             while (rs.next()) {
                 Product product = new Product();
@@ -42,8 +40,7 @@ public class ProductDAOImplement implements ProductDAO {
     public void insert(Product product) {
         String sql = "{CALL sp_insert_product(?, ?, ?, ?, ?, ?)}";
 
-        try (Connection cn = ConnectionDB.getConnection();
-             CallableStatement cs = cn.prepareCall(sql)) {
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql)) {
 
             cs.setString(1, product.getName());
             cs.setString(2, product.getDetails());
@@ -63,8 +60,7 @@ public class ProductDAOImplement implements ProductDAO {
     public void update(Product product) {
         String sql = "{CALL sp_update_product(?, ?, ?, ?, ?, ?, ?)}";
 
-        try (Connection cn = ConnectionDB.getConnection();
-             CallableStatement cs = cn.prepareCall(sql)) {
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql)) {
 
             cs.setInt(1, product.getIdProduct());
             cs.setString(2, product.getName());
@@ -85,8 +81,7 @@ public class ProductDAOImplement implements ProductDAO {
     public void deleteById(Integer idProduct) {
         String sql = "{CALL sp_delete_product_by_id(?)}";
 
-        try (Connection cn = ConnectionDB.getConnection();
-             CallableStatement cs = cn.prepareCall(sql)) {
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql)) {
 
             cs.setInt(1, idProduct);
             cs.executeUpdate();
@@ -101,8 +96,7 @@ public class ProductDAOImplement implements ProductDAO {
         Product product = null;
         String sql = "{CALL sp_find_product_by_id(?)}";
 
-        try (Connection cn = ConnectionDB.getConnection();
-             CallableStatement cs = cn.prepareCall(sql)) {
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql)) {
 
             cs.setInt(1, idProduct);
             ResultSet rs = cs.executeQuery();
@@ -125,4 +119,30 @@ public class ProductDAOImplement implements ProductDAO {
 
         return product;
     }
+
+    public Product getLastInsertedProduct() {
+        Product product = null;
+        String sql = "SELECT * FROM product ORDER BY idProduct DESC LIMIT 1";
+
+        try (Connection cn = ConnectionDB.getConnection(); PreparedStatement ps = cn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                product = new Product();
+                product.setIdProduct(rs.getInt("idProduct"));
+                product.setName(rs.getString("name"));
+                product.setDetails(rs.getString("details"));
+                product.setPrice(rs.getFloat("price"));
+                product.setStock(rs.getInt("stock"));
+                product.setImageUrl(rs.getString("imageUrl"));
+                product.setEntryDate(rs.getDate("entryDate"));
+                product.setCreatedAt(rs.getTimestamp("created_at"));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener el último producto: " + e.getMessage());
+        }
+
+        return product;
+    }
+
 }

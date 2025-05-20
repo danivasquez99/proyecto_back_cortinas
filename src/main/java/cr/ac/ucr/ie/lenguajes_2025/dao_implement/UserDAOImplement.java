@@ -38,7 +38,9 @@ public class UserDAOImplement implements UserDAO {
                 user = new User();
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
-                user.setBirthdate(LocalDate.parse(rs.getString(3)));
+
+                Date birthdateSql = rs.getDate("birthdate");
+                user.setBirthdate(birthdateSql != null ? birthdateSql.toLocalDate() : null);
                 user.setEmail(rs.getString(4));
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
@@ -95,7 +97,7 @@ public class UserDAOImplement implements UserDAO {
             ps.setString(4, t.getEmail());
             ps.setString(5, Utils.encryptSHA256(t.getPassword()));
             ps.setString(6, t.getUrlProfilePicture());
-            
+
             ps.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al actualizar usuario: " + e.getMessage());
@@ -163,16 +165,16 @@ public class UserDAOImplement implements UserDAO {
         sql.append("SELECT idUser, name, birthdate, email, password, ");
         sql.append("urlProfilePicture, role, isActive ");
         sql.append("FROM user WHERE email=? AND password=?;");
-        
+
         User userLogin = new User();
         String encryptPassword = Utils.encryptSHA256(password);
-        
+
         try {
             Connection cn = ConnectionDB.getConnection();
             PreparedStatement ps = cn.prepareStatement(sql.toString());
             ps.setString(1, email);
             ps.setString(2, encryptPassword);
-            
+
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -189,7 +191,7 @@ public class UserDAOImplement implements UserDAO {
         } catch (SQLException e) {
             System.err.println("Error al cargar usuario: " + e.getMessage());
         }
-        
+
         return userLogin;
     }
 

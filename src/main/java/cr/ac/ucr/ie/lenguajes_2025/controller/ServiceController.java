@@ -9,7 +9,7 @@ import java.util.LinkedList;
 
 @RestController
 @RequestMapping("/api/services")
-@CrossOrigin(origins = "*") // permite llamadas desde el front
+@CrossOrigin(origins = "http://localhost:3000")
 public class ServiceController {
 
     private final ServiceDAO serviceDAO = new ServiceDAOImplement();

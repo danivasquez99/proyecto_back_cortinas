@@ -36,18 +36,19 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<Void> createOrder(@RequestBody Order order) {
         orderServices.addOrder(order);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(201).build(); // <-- HTTP 201 Created
     }
 
-    @PutMapping
-    public ResponseEntity<Void> updateOrder(@RequestBody Order order) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateOrder(@PathVariable int id, @RequestBody Order order) {
+        order.setIdOrder(id); // Asegura que el ID esté definido correctamente
         orderServices.updateOrder(order);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build(); // <-- HTTP 204
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable int id) {
         orderServices.deleteOrderById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build(); // <-- HTTP 204
     }
 }
