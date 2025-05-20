@@ -23,9 +23,7 @@ public class UserDAOImplement implements UserDAO {
         LinkedList<User> usersList = new LinkedList<User>();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT idUser, name, birthdate, email, password, ");
-        sql.append("urlProfilePicture, role, isActive, creationDate ");
-        sql.append("FROM user WHERE isActive = 1");
+        sql.append("CALL sp_get_all_users();");
 
         try {
             Connection cn = ConnectionDB.getConnection();
@@ -43,8 +41,8 @@ public class UserDAOImplement implements UserDAO {
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
-                user.setIsActive(rs.getString(8) == "1" ? true : false);
-
+                user.setIsActive("1".equals(rs.getString(8)));
+                
                 usersList.add(user);
             }
 
@@ -58,10 +56,7 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public void insert(User t) {
         StringBuilder sql = new StringBuilder();
-        sql.append("INSERT INTO user");
-        sql.append("(name, birthdate, email, ");
-        sql.append("password, urlProfilePicture) ");
-        sql.append("VALUES (?,?,?,?,?)");
+        sql.append("CALL sp_insert_user(?,?,?,?,?);");
 
         try {
             Connection cn = ConnectionDB.getConnection();
@@ -81,10 +76,7 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public void update(User t) {
         StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE user SET ");
-        sql.append("idUser=?, name=?, birthdate=?, ");
-        sql.append(" email=?, password=?, urlProfilePicture=? ");
-        sql.append("WHERE idUser=?");
+        sql.append("CALL sp_update_user(?,?,?,?,?,?);");
 
         try {
             Connection cn = ConnectionDB.getConnection();
@@ -95,7 +87,7 @@ public class UserDAOImplement implements UserDAO {
             ps.setString(4, t.getEmail());
             ps.setString(5, Utils.encryptSHA256(t.getPassword()));
             ps.setString(6, t.getUrlProfilePicture());
-            
+
             ps.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al actualizar usuario: " + e.getMessage());
@@ -105,8 +97,7 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public void deleteById(Integer t) {
         StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE user SET isActive=0 ");
-        sql.append("WHERE idUser=?");
+        sql.append("CALL sp_delete_user(?);");
 
         try {
             Connection cn = ConnectionDB.getConnection();
@@ -124,9 +115,7 @@ public class UserDAOImplement implements UserDAO {
         User user = new User();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT idUser, name, birthdate, email, password, ");
-        sql.append("urlProfileImage, role, isActive ");
-        sql.append("FROM user WHERE idUser=?");
+        sql.append("CALL sp_find_user_by_id(?);");
 
         try {
             Connection cn = ConnectionDB.getConnection();
@@ -142,7 +131,7 @@ public class UserDAOImplement implements UserDAO {
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
-                user.setIsActive(rs.getString(8).equals("1"));
+                user.setIsActive("1".equals(rs.getString(8)));
             }
 
         } catch (SQLException e) {
@@ -160,19 +149,17 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public User login(String email, String password) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT idUser, name, birthdate, email, password, ");
-        sql.append("urlProfilePicture, role, isActive ");
-        sql.append("FROM user WHERE email=? AND password=?;");
-        
+        sql.append("CALL sp_login_user(?,?);");
+
         User userLogin = new User();
         String encryptPassword = Utils.encryptSHA256(password);
-        
+
         try {
             Connection cn = ConnectionDB.getConnection();
             PreparedStatement ps = cn.prepareStatement(sql.toString());
             ps.setString(1, email);
             ps.setString(2, encryptPassword);
-            
+
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -189,7 +176,7 @@ public class UserDAOImplement implements UserDAO {
         } catch (SQLException e) {
             System.err.println("Error al cargar usuario: " + e.getMessage());
         }
-        
+
         return userLogin;
     }
 

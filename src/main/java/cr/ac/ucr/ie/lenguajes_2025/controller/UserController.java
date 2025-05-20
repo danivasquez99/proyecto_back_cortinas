@@ -44,7 +44,7 @@ public class UserController {
         return getList();
     }
 
-    @PutMapping("/edit")
+    @PutMapping("/update")
     @ResponseBody
     public Map updateUser(@RequestBody User user) {
         UserService.updateUser(user);

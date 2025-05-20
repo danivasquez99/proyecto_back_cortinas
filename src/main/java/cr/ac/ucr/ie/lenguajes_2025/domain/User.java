@@ -12,7 +12,7 @@ public class User {
  
     private int idUser;
     private String name;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthdate;
     private String email;
     private String password;
