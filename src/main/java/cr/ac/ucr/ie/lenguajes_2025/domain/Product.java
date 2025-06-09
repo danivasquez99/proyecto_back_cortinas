@@ -1,32 +1,40 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package cr.ac.ucr.ie.lenguajes_2025.domain;
 
-/**
- *
- * @author Tony
- */
+import jakarta.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
 
+@Entity
+@Table(name = "product")
 public class Product {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idProduct")
     private int idProduct;
+
+    @Column(length = 25)
     private String name;
+
+    @Column(length = 200)
     private String details;
+
     private float price;
+
     private int stock;
+
+    @Column(name= "imageUrl",length = 255)
     private String imageUrl;
+
+    @Column(name = "entryDate")
     private Date entryDate;
+
+    @Column(name = "created_at", updatable = false, insertable = false)
     private Timestamp createdAt;
 
-    // Constructor vacío
     public Product() {
     }
 
-    // Constructor con parámetros
     public Product(int idProduct, String name, String details, float price, int stock, String imageUrl, Date entryDate, Timestamp createdAt) {
         this.idProduct = idProduct;
         this.name = name;
@@ -38,7 +46,6 @@ public class Product {
         this.createdAt = createdAt;
     }
 
-    // Getters y Setters
     public int getIdProduct() {
         return idProduct;
     }
@@ -103,7 +110,6 @@ public class Product {
         this.createdAt = createdAt;
     }
 
-    // toString
     @Override
     public String toString() {
         return "Product{"
@@ -117,5 +123,4 @@ public class Product {
                 + ", createdAt=" + createdAt
                 + '}';
     }
-    
 }

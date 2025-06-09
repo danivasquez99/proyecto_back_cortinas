@@ -1,66 +1,69 @@
 package cr.ac.ucr.ie.lenguajes_2025.services;
 
-import cr.ac.ucr.ie.lenguajes_2025.dao_implement.ProductDAOImplement;
-import cr.ac.ucr.ie.lenguajes_2025.dao_implement.ImageServiceJDBC;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Product;
+import cr.ac.ucr.ie.lenguajes_2025.repository.ProductoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.LinkedList;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServices {
 
-    private final ProductDAOImplement productDAOImplement = new ProductDAOImplement();
-    private final ImageServiceJDBC imageService;
+    private final ProductoRepository productoRepository;
+    private final ImageServiceJPA imageService;
 
-    public ProductServices(ImageServiceJDBC imageService) {
+    @Autowired
+    public ProductServices(ProductoRepository productoRepository, ImageServiceJPA imageService) {
+        this.productoRepository = productoRepository;
         this.imageService = imageService;
     }
 
     // Obtener todos los productos
-    public LinkedList<Product> getAllProducts() {
-        return productDAOImplement.getAll();
+    public List<Product> getAllProducts() {
+        return productoRepository.findAll();
     }
 
     // Insertar producto con imagen
-    public void insertProductWithImage(Product product, MultipartFile imageFile) throws Exception {
-        // 1. Insertar el producto primero sin imagen
-        productDAOImplement.insert(product);
+    public Product insertProductWithImage(Product product, MultipartFile imageFile) throws Exception {
+        Product savedProduct = productoRepository.save(product);
 
-        //seter el ultimo producto
-        product = productDAOImplement.getLastInsertedProduct();
-        // 2. Guardar la imagen en disco y obtener la URL
-        String imageUrl = imageService.storeImage(product.getIdProduct(), imageFile);
+        // Guardar la imagen y obtener su URL
+        String imageUrl = imageService.storeImage(savedProduct.getIdProduct(), imageFile);
+        savedProduct.setImageUrl(imageUrl);
 
-        // 3. Asignar la URL al producto
-        product.setImageUrl(imageUrl);
-
-        // 4. Actualizar el producto con la URL
-        productDAOImplement.update(product);
+        return productoRepository.save(savedProduct);
     }
 
-    // Insertar sin imagen (opcional)
-    public void insertProduct(Product product) {
-        productDAOImplement.insert(product);
+    public Product updateProductWithImage(Product product, MultipartFile imageFile) throws Exception {
+        String imageUrl = imageService.storeImage(product.getIdProduct(), imageFile);
+        product.setImageUrl(imageUrl);
+        return productoRepository.save(product);
+    }
+
+    // Insertar sin imagen
+    public Product insertProduct(Product product) {
+        return productoRepository.save(product);
     }
 
     // Actualizar un producto existente
-    public void updateProduct(Product product) {
-        productDAOImplement.update(product);
+    public Product updateProduct(Product product) {
+        return productoRepository.save(product);
     }
 
     // Eliminar un producto por su ID
     public void deleteProductById(int id) {
-        productDAOImplement.deleteById(id);
+        productoRepository.deleteById(id);
     }
 
     // Buscar un producto por su ID
-    public Product findProductById(int id) {
-        return productDAOImplement.findById(id);
+    public Optional<Product> findProductById(int id) {
+        return productoRepository.findById(id);
     }
 
-    // Getter para acceder al servicio de imágenes
-    public ImageServiceJDBC getImageService() {
+    public ImageServiceJPA getImageService() {
         return imageService;
     }
 }
