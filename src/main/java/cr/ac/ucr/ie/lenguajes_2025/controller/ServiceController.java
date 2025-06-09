@@ -1,47 +1,51 @@
 package cr.ac.ucr.ie.lenguajes_2025.controller;
 
-import cr.ac.ucr.ie.lenguajes_2025.dao.ServiceDAO;
-import cr.ac.ucr.ie.lenguajes_2025.dao_implement.ServiceDAOImplement;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Service;
+import cr.ac.ucr.ie.lenguajes_2025.services.ServiceService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/services")
 @CrossOrigin(origins = "http://localhost:3000")
 public class ServiceController {
 
-    private final ServiceDAO serviceDAO = new ServiceDAOImplement();
+    private final ServiceService serviceService;
+
+    public ServiceController(ServiceService serviceService) {
+        this.serviceService = serviceService;
+    }
 
     // GET /api/services
     @GetMapping
-    public LinkedList<Service> getAllServices() {
-        return serviceDAO.getAll();
+    public List<Service> getAllServices() {
+        return serviceService.obtenerTodos();
     }
 
     // GET /api/services/{id}
     @GetMapping("/{id}")
-    public Service getServiceById(@PathVariable int id) {
-        return serviceDAO.findById(id);
+    public Optional<Service> getServiceById(@PathVariable int id) {
+        return serviceService.obtenerPorId(id);
     }
 
     // POST /api/services
     @PostMapping
-    public void createService(@RequestBody Service service) {
-        serviceDAO.insert(service);
+    public Service createService(@RequestBody Service service) {
+        return serviceService.guardar(service);
     }
 
     // PUT /api/services/{id}
     @PutMapping("/{id}")
-    public void updateService(@PathVariable int id, @RequestBody Service service) {
-        service.setId(id); // asegurarse que use el ID de la URL
-        serviceDAO.update(service);
+    public Service updateService(@PathVariable int id, @RequestBody Service service) {
+        service.setId(id);
+        return serviceService.guardar(service);
     }
 
     // DELETE /api/services/{id}
     @DeleteMapping("/{id}")
     public void deleteService(@PathVariable int id) {
-        serviceDAO.deleteById(id); // elimina lógicamente (o físicamente si así está hecho)
+        serviceService.eliminar(id);
     }
 }
