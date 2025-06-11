@@ -4,47 +4,65 @@
  */
 package cr.ac.ucr.ie.lenguajes_2025.services;
 
-import cr.ac.ucr.ie.lenguajes_2025.dao_implement.RoleDAOImplement;
+import cr.ac.ucr.ie.lenguajes_2025.domain.Permission;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Role;
+import cr.ac.ucr.ie.lenguajes_2025.repository.RoleRepository;
 import java.util.LinkedList;
+import java.util.Optional;
+import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Josías Morales
  */
 
+@Service
 public class RoleService {
    
-    // Instanciamos el DAO
-    private static final RoleDAOImplement roleDAO = new RoleDAOImplement();
+     private final RoleRepository roleRepository;
 
+     @Autowired
+     public RoleService(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
+     
     // Obtener todos los roles
     public LinkedList<Role> getAllRoles() {
-        return roleDAO.getAll();
+        return new LinkedList<>(roleRepository.findAll());
     }
 
-    // Buscar un role por su ID
+    // Buscar un rol por su ID
     public Role findRoleById(int id) {
-        return roleDAO.findById(id);
+        Optional<Role> optionalRole = roleRepository.findById(id);
+        return optionalRole.orElse(null);
     }
 
-    // Buscar un role por su nombre
+    // Buscar un rol por su nombre
     public Role findByName(String name) {
-        return roleDAO.findByName(name);
+        return roleRepository.findByName(name);
     }
 
-    // Insertar un nuevo role
+    // Insertar un nuevo rol
     public void insertRole(Role role) {
-        roleDAO.insert(role);
+        roleRepository.save(role);
     }
 
-    // Actualizar un role existente
+    // Actualizar un rol existente
     public void updateRole(Role role) {
-        roleDAO.update(role);
+        roleRepository.save(role);
     }
 
-    // Eliminar un role por su ID
+    // Eliminar un rol por su ID
     public void deleteRoleById(int id) {
-        roleDAO.deleteById(id);
+        roleRepository.deleteById(id);
     }
+    
+    public Role assignPermission(int rolId, Set<Permission> permissions) {
+    Role role = roleRepository.findById(rolId)
+            .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+    role.setPermissions(permissions);
+    return roleRepository.save(role);
+  }
 }

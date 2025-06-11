@@ -16,12 +16,16 @@ import java.util.LinkedList;
  */
 
 @RestController
-@RequestMapping("/api/permissions")
+@RequestMapping("/api/permission")
 @CrossOrigin(origins = "http://localhost:3000")
 public class PermissionController {
-    
-    private final PermissionService permissionService = new PermissionService();
+    private final PermissionService permissionService;
 
+    public PermissionController(PermissionService permissionService) {
+        this.permissionService = permissionService;
+    }
+    
+    // GET: Obtener todos los permisos
     @GetMapping("")
     public ResponseEntity<LinkedList<Permission>> getAllPermissions() {
         LinkedList<Permission> permissions = permissionService.getAllPermissions();
@@ -31,56 +35,47 @@ public class PermissionController {
         return ResponseEntity.ok(permissions);
     }
 
+    // GET: Obtener un permiso por ID
     @GetMapping("/{id}")
     public ResponseEntity<Permission> getPermissionById(@PathVariable int id) {
         Permission permission = permissionService.findPermissionById(id);
-        if (permission == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(permission);
+        return permission != null ? ResponseEntity.ok(permission) : ResponseEntity.notFound().build();
     }
-    
+
+    // GET: Obtener un permiso por nombre
     @GetMapping("/name/{name}")
     public ResponseEntity<Permission> getPermissionByName(@PathVariable String name) {
-    Permission permission = permissionService.findByName(name);
-    
-    if (permission == null) {
-        return ResponseEntity.notFound().build();
+        Permission permission = permissionService.findByName(name);
+        return permission != null ? ResponseEntity.ok(permission) : ResponseEntity.notFound().build();
     }
-    
-    return ResponseEntity.ok(permission);
-}
 
+    // POST: Crear un nuevo permiso
     @PostMapping("")
     public ResponseEntity<Void> createPermission(@RequestBody Permission permission) {
         permissionService.insertPermission(permission);
         return ResponseEntity.ok().build();
     }
-    
+
+    // PUT: Actualizar un permiso existente
     @PutMapping("/{id}")
     public ResponseEntity<Void> updatePermission(@PathVariable int id, @RequestBody Permission permission) {
         Permission existing = permissionService.findPermissionById(id);
-        
         if (existing == null) {
             return ResponseEntity.notFound().build();
         }
-        
         permission.setId(id);
         permissionService.updatePermission(permission);
-       
         return ResponseEntity.ok().build();
     }
 
+    // DELETE: Eliminar un permiso por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePermission(@PathVariable int id) {
         Permission existing = permissionService.findPermissionById(id);
-       
         if (existing == null) {
             return ResponseEntity.notFound().build();
         }
-        
         permissionService.deletePermissionById(id);
-        
         return ResponseEntity.ok().build();
     }
 }

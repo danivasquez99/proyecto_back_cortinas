@@ -4,15 +4,40 @@
  */
 package cr.ac.ucr.ie.lenguajes_2025.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import java.util.Set;
+
 /**
  *
  * @author Josías Morales
  */
 
+@Entity
+@Table(name = "role")
 public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    
+    @Column(length = 100, nullable = false, unique = true)
     private String name;
     
+    @ManyToMany
+    @JoinTable(
+        name = "role_permission",
+        joinColumns = @JoinColumn(name = "role_id"),            // columna FK que apunta a la clase role
+        inverseJoinColumns = @JoinColumn(name = "permission_id") // columna FK que apunta a la clase Permission
+    )
+    private Set<Permission> permissions;
+
     public Role() {}
 
     public Role(int id, String name) {
@@ -20,6 +45,8 @@ public class Role {
         this.name = name;
     }
 
+    // Getters y setters
+    
     public int getId() {
         return id;
     }
@@ -34,6 +61,14 @@ public class Role {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public Set<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Set<Permission> permissions) {
+        this.permissions = permissions;
     }
 
     @Override
