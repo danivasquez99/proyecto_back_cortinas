@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("users")
+@RequestMapping("api/users")
 public class UserController {
 
     @GetMapping("/list")

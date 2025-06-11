@@ -3,7 +3,6 @@ package cr.ac.ucr.ie.lenguajes_2025.services;
 import cr.ac.ucr.ie.lenguajes_2025.dao_implement.UserDAOImplement;
 import cr.ac.ucr.ie.lenguajes_2025.domain.User;
 import java.util.LinkedList;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *

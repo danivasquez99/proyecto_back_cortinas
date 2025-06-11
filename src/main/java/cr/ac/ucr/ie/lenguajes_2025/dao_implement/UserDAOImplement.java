@@ -36,7 +36,9 @@ public class UserDAOImplement implements UserDAO {
                 user = new User();
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
-                user.setBirthdate(LocalDate.parse(rs.getString(3)));
+
+                Date birthdateSql = rs.getDate("birthdate");
+                user.setBirthdate(birthdateSql != null ? birthdateSql.toLocalDate() : null);
                 user.setEmail(rs.getString(4));
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
@@ -149,7 +151,13 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public User login(String email, String password) {
         StringBuilder sql = new StringBuilder();
+<<<<<<< HEAD
         sql.append("CALL sp_login_user(?,?);");
+=======
+        sql.append("SELECT idUser, name, birthdate, email, password, ");
+        sql.append("urlProfilePicture, role, isActive ");
+        sql.append("FROM user WHERE email=? AND password=?;");
+>>>>>>> dev
 
         User userLogin = new User();
         String encryptPassword = Utils.encryptSHA256(password);

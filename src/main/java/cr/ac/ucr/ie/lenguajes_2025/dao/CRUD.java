@@ -1,5 +1,6 @@
 package cr.ac.ucr.ie.lenguajes_2025.dao;
 
+import cr.ac.ucr.ie.lenguajes_2025.domain.Product;
 import java.util.LinkedList;
 
 /**
