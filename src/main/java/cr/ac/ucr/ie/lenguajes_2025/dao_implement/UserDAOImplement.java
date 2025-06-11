@@ -151,13 +151,7 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public User login(String email, String password) {
         StringBuilder sql = new StringBuilder();
-<<<<<<< HEAD
         sql.append("CALL sp_login_user(?,?);");
-=======
-        sql.append("SELECT idUser, name, birthdate, email, password, ");
-        sql.append("urlProfilePicture, role, isActive ");
-        sql.append("FROM user WHERE email=? AND password=?;");
->>>>>>> dev
 
         User userLogin = new User();
         String encryptPassword = Utils.encryptSHA256(password);
