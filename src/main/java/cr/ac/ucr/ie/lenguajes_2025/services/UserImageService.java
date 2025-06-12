@@ -1,31 +1,28 @@
 package cr.ac.ucr.ie.lenguajes_2025.services;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 /**
  *
  * @author Daniel
  */
-
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.*;
-
-import org.springframework.stereotype.Service;
-
-import java.nio.file.Path;
-
-import org.springframework.beans.factory.annotation.Value;
-
 @Service
-public class PromotionImageService {
-
+public class UserImageService {
+    
     private static Path storageLocation;
     private static String imageBaseUrl;
-
-    public PromotionImageService(
-        @Value("${app.images.dir:src/main/resources/static/images/promotions}") String imagesDir,
-        @Value("${app.images.base-url:http://localhost:8080/images/promotions/}") String baseUrl
+    
+    public UserImageService(
+        @Value("${app.images.dir:src/main/resources/static/images/profile}") String imagesDir,
+        @Value("${app.images.base-url:http://localhost:8080/images/profile/}") String baseUrl
     ) throws IOException {
         this.storageLocation = Paths.get(imagesDir).toAbsolutePath().normalize();
         Files.createDirectories(this.storageLocation);
@@ -35,7 +32,7 @@ public class PromotionImageService {
     /**
      * Guarda la imagen y retorna la URL pública (o nombre de archivo si prefieres).
      */
-    public static String savePromotionImage(MultipartFile file) throws IOException {
+    public static String saveUserImage(MultipartFile file) throws IOException {
         String original = file.getOriginalFilename();
         if (original == null || original.isBlank()) {
             throw new IllegalArgumentException("El archivo no tiene nombre.");
@@ -51,4 +48,3 @@ public class PromotionImageService {
         return imageBaseUrl + filename;
     }
 }
-

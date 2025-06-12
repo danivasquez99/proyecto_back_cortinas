@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @author Daniel
  */
 public class User {
- 
+
     private int idUser;
     private String name;
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -19,8 +19,11 @@ public class User {
     private String urlProfilePicture;
     private String role;
     private boolean isActive;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate createdAt;
 
-    public User() {}
+    public User() {
+    }
 
     public User(int idUser, String name, LocalDate birthdate, String email, String password, String urlProfilePicture, String role, boolean isActive) {
         this.idUser = idUser;
@@ -96,5 +99,12 @@ public class User {
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
     }
-    
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
 }

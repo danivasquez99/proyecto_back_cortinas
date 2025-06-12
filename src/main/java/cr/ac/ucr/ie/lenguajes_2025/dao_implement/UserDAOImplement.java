@@ -36,14 +36,13 @@ public class UserDAOImplement implements UserDAO {
                 user = new User();
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
-
-                Date birthdateSql = rs.getDate("birthdate");
-                user.setBirthdate(birthdateSql != null ? birthdateSql.toLocalDate() : null);
+                user.setBirthdate(rs.getDate(3).toLocalDate());
                 user.setEmail(rs.getString(4));
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
                 user.setIsActive("1".equals(rs.getString(8)));
+                user.setCreatedAt(rs.getDate(9).toLocalDate());
                 
                 usersList.add(user);
             }
@@ -128,12 +127,13 @@ public class UserDAOImplement implements UserDAO {
             if (rs.next()) {
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
-                user.setBirthdate(LocalDate.parse(rs.getString(3)));
+                user.setBirthdate(rs.getDate(3).toLocalDate());
                 user.setEmail(rs.getString(4));
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
                 user.setIsActive("1".equals(rs.getString(8)));
+                user.setCreatedAt(rs.getDate(9).toLocalDate());
             }
 
         } catch (SQLException e) {
@@ -143,6 +143,32 @@ public class UserDAOImplement implements UserDAO {
         return user;
     }
 
+    public User getLastInsertedUser() {
+        User user = null;
+        String sql = "SELECT * FROM user ORDER BY idUser DESC LIMIT 1";
+
+        try (Connection cn = ConnectionDB.getConnection(); PreparedStatement ps = cn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                user = new User();
+                user.setIdUser(rs.getInt(1));
+                user.setName(rs.getString(2));
+                user.setBirthdate(rs.getDate(3).toLocalDate());
+                user.setEmail(rs.getString(4));
+                user.setPassword(rs.getString(5));
+                user.setUrlProfilePicture(rs.getString(6));
+                user.setRole(rs.getString(7));
+                user.setIsActive("1".equals(rs.getString(8)));
+                user.setCreatedAt(rs.getDate(9).toLocalDate());
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener el último usuario: " + e.getMessage());
+        }
+
+        return user;
+    }
+    
     @Override
     public boolean validateExistingEmail(String email) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody

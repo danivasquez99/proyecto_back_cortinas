@@ -66,7 +66,7 @@ public class PromotionController {
                 PromotionService.insertPromotionWithImage(promotion, image);
 
                 // Crear ubicación del recurso con URL absoluta
-                String locationPath = "/api/products/" + promotion.getIdPromotion();
+                String locationPath = "/api/promotions/" + promotion.getIdPromotion();
                 return ResponseEntity.status(HttpStatus.CREATED)
                         .header("Location", locationPath)
                         .build();

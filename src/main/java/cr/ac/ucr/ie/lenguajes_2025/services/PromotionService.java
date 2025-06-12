@@ -15,8 +15,7 @@ public class PromotionService {
 
     ;
 
-    public PromotionService() {
-    }
+    public PromotionService() {}
 
     public static LinkedList<Promotion> getAllPromotions() {
         return service.getAll();
