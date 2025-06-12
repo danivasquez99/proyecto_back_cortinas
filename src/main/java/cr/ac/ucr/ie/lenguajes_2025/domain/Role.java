@@ -6,6 +6,7 @@ package cr.ac.ucr.ie.lenguajes_2025.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,13 +31,13 @@ public class Role {
     @Column(length = 100, nullable = false, unique = true)
     private String name;
     
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-        name = "role_permission",
-        joinColumns = @JoinColumn(name = "role_id"),            // columna FK que apunta a la clase role
-        inverseJoinColumns = @JoinColumn(name = "permission_id") // columna FK que apunta a la clase Permission
-    )
-    private Set<Permission> permissions;
+    name = "role_permission",
+    joinColumns = @JoinColumn(name = "role_id"),
+    inverseJoinColumns = @JoinColumn(name = "permission_id")
+)
+private Set<Permission> permissions;
 
     public Role() {}
 

@@ -16,7 +16,7 @@ import java.util.LinkedList;
  */
 
 @RestController
-@RequestMapping("/api/permission")
+@RequestMapping("/api/permissions")
 @CrossOrigin(origins = "http://localhost:3000")
 public class PermissionController {
     private final PermissionService permissionService;
