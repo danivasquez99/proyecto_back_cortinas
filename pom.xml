@@ -7,7 +7,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.4.5</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
 
     <groupId>cr.ac.ucr.ie</groupId>
@@ -63,17 +63,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.4.5</version>
-            </plugin>
-
-            <!-- Exec Plugin -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.0</version>
                 <configuration>
-                    <mainClass>cr.ac.ucr.ie.ProyectoLenguajesApplication</mainClass>
+                    <mainClass>cr.ac.ucr.ie.lenguajes_2025.ProyectoLenguajesApplication</mainClass>
                 </configuration>
             </plugin>
+
+           
         </plugins>
     </build>
 </project>

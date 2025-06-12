@@ -1,24 +1,47 @@
 package cr.ac.ucr.ie.lenguajes_2025.domain;
 
-import java.sql.Date;
+import jakarta.persistence.*;
+import java.sql.Time;
+import java.sql.Timestamp;
 
+@Entity
+@Table(name = "service")
 public class Service {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idService")
     private int id;
+
+    @Column(length = 45, nullable = false)
     private String name;
+
+    @Column(length = 25)
     private String category;
+
+    @Column(length = 200)
     private String description;
+
+    @Column(name = "estimatedCost")
     private float estimatedCost;
-    private String estimatedDuration;
-    private char status; // 'A' = Available, 'N' = Not Available
-    private Date creationDate;
+
+    @Column(name = "estimatedDuration")
+    private Time estimatedDuration;
+
+    @Column(length = 1)
+    private char status;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Timestamp createdAt;
+    
+    @Column(name = "imageUrl")
     private String imageUrl;
 
-    public Service() {
-    }
+
+    public Service() {}
 
     public Service(int id, String name, String category, String description, float estimatedCost,
-                   String estimatedDuration, char status, Date creationDate, String imageUrl) {
+                   Time estimatedDuration, char status, Timestamp createdAt) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -26,72 +49,37 @@ public class Service {
         this.estimatedCost = estimatedCost;
         this.estimatedDuration = estimatedDuration;
         this.status = status;
-        this.creationDate = creationDate;
-        this.imageUrl = imageUrl;
+        this.createdAt = createdAt;
     }
 
-    public int getId() {
-        return id;
+    // Getters y setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public float getEstimatedCost() { return estimatedCost; }
+    public void setEstimatedCost(float estimatedCost) { this.estimatedCost = estimatedCost; }
+
+    public Time getEstimatedDuration() { return estimatedDuration; }
+    public void setEstimatedDuration(Time estimatedDuration) { this.estimatedDuration = estimatedDuration; }
+
+    public char getStatus() { return status; }
+    public void setStatus(char status) { this.status = status; }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public float getEstimatedCost() {
-        return estimatedCost;
-    }
-
-    public void setEstimatedCost(float estimatedCost) {
-        this.estimatedCost = estimatedCost;
-    }
-
-    public String getEstimatedDuration() {
-        return estimatedDuration;
-    }
-
-    public void setEstimatedDuration(String estimatedDuration) {
-        this.estimatedDuration = estimatedDuration;
-    }
-
-    public char getStatus() {
-        return status;
-    }
-
-    public void setStatus(char status) {
-        this.status = status;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getImageUrl() {
@@ -101,4 +89,5 @@ public class Service {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
 }
