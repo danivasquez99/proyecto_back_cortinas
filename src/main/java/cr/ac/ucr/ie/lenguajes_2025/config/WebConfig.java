@@ -14,6 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+    
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -23,10 +24,23 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
     
-      @Override
+    @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Configuración existente para recursos estáticos generales
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/");
+        
+        // Nueva configuración específica para imágenes con recarga automática
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("classpath:/static/images/", "file:src/main/resources/static/images/")
+                .setCachePeriod(0) // Sin cache para desarrollo - recarga automática
+                .resourceChain(false); // Sin optimizaciones para desarrollo
+        
+        // Configuración adicional para todos los recursos estáticos con recarga automática
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/", "file:src/main/resources/static/")
+                .setCachePeriod(0) // Sin cache para desarrollo
+                .resourceChain(false);
     }
     
     @Override
