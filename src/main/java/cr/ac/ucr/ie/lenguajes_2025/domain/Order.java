@@ -1,22 +1,28 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package cr.ac.ucr.ie.lenguajes_2025.domain;
 
+import jakarta.persistence.*;
 import java.sql.Date;
 
-/**
- *
- * @author Tony
- */
+@Entity
+@Table(name = "order_table")
 public class Order {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idOrder;
+
+    @Column(length = 25)
     private String status;
+
+    @Column(name = "orderDate")
     private Date orderDate;
+
+    @Column(name = "estimatedDeliveryDate")
     private Date estimatedDeliveryDate;
+
     private Float total;
+
+    @Column(name = "created_at", updatable = false, insertable = false)
     private Date createdAt;
 
     public Order() {
@@ -78,7 +84,4 @@ public class Order {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
-    
-    
-
 }

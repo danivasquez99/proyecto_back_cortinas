@@ -6,16 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping("/api/order")
 @CrossOrigin(origins = "http://localhost:3000")
 public class OrderController {
 
-    private final OrderServices orderServices;
+     private final OrderServices orderServices;
 
-    public OrderController() {
-        this.orderServices = new OrderServices();
+    @Autowired
+    public OrderController(OrderServices orderServices) {
+        this.orderServices = orderServices;
     }
 
     @GetMapping

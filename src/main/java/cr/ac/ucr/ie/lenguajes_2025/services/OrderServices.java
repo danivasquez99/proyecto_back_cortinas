@@ -1,59 +1,41 @@
 package cr.ac.ucr.ie.lenguajes_2025.services;
 
-import cr.ac.ucr.ie.lenguajes_2025.dao_implement.OrderDAOImplement;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Order;
+import cr.ac.ucr.ie.lenguajes_2025.repository.OrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
+import java.util.Optional;
 
-/**
- * Servicio de órdenes utilizando directamente la implementación DAO:
- * cr.ac.ucr.ie.lenguajes_2025.dao_implement.OrderDAOImplement
- *
- * @author Tony
- */
+@Service
 public class OrderServices {
 
-    private final OrderDAOImplement orderDAO;
+    private final OrderRepository orderRepository;
 
-    public OrderServices() {
-        this.orderDAO = new OrderDAOImplement();
+    @Autowired
+    public OrderServices(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
     }
 
-    /**
-     * Devuelve todas las órdenes (ya vienen tipadas como Order).
-     * @return 
-     */
     public LinkedList<Order> getAllOrders() {
-        
-        return orderDAO.getAll();
-        
+        return new LinkedList<>(orderRepository.findAll());
     }
 
-    /**
-     * Inserta una nueva orden.
-     */
     public void addOrder(Order order) {
-        orderDAO.insert(order);
+        orderRepository.save(order);
     }
 
-    /**
-     * Actualiza una orden existente.
-     */
     public void updateOrder(Order order) {
-        orderDAO.update(order);
+        orderRepository.save(order); 
     }
 
-    /**
-     * Elimina una orden por su ID.
-     */
     public void deleteOrderById(int idOrder) {
-        orderDAO.deleteById(idOrder);
+        orderRepository.deleteById(idOrder);
     }
 
-    /**
-     * Busca y devuelve una orden por ID, o null si no existe.
-     */
     public Order findOrderById(int idOrder) {
-        return orderDAO.findById(idOrder);
+        Optional<Order> optionalOrder = orderRepository.findById(idOrder);
+        return optionalOrder.orElse(null);
     }
 }

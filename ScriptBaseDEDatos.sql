@@ -468,3 +468,8 @@ SELECT 3, id FROM role WHERE name = 'Viewer';
 -- guest_user -> Guest
 INSERT INTO user_role (user_id, role_id)
 SELECT 4, id FROM role WHERE name = 'Guest';
+
+
+RENAME TABLE `order` TO `order_table`;
+
+SHOW CREATE TABLE order_table;
