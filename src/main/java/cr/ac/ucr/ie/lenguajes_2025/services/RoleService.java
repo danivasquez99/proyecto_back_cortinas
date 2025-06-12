@@ -4,12 +4,10 @@
  */
 package cr.ac.ucr.ie.lenguajes_2025.services;
 
-import cr.ac.ucr.ie.lenguajes_2025.domain.Permission;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Role;
 import cr.ac.ucr.ie.lenguajes_2025.repository.RoleRepository;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,11 +56,4 @@ public class RoleService {
     public void deleteRoleById(int id) {
         roleRepository.deleteById(id);
     }
-    
-    public Role assignPermission(int rolId, Set<Permission> permissions) {
-    Role role = roleRepository.findById(rolId)
-            .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-    role.setPermissions(permissions);
-    return roleRepository.save(role);
-  }
 }

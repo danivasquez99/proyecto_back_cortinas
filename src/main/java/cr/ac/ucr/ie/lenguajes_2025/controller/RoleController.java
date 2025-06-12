@@ -7,6 +7,7 @@ package cr.ac.ucr.ie.lenguajes_2025.controller;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Permission;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Role;
 import cr.ac.ucr.ie.lenguajes_2025.services.PermissionService;
+import cr.ac.ucr.ie.lenguajes_2025.services.RolePermissionService;
 import cr.ac.ucr.ie.lenguajes_2025.services.RoleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +27,12 @@ public class RoleController {
     
     private final RoleService roleService;
     private final PermissionService permissionService;
+    private final RolePermissionService rolePermissionService;
     
-    public RoleController(RoleService rolService, PermissionService permissionService) {
+    public RoleController(RoleService rolService, PermissionService permissionService, RolePermissionService rolePermissionService) {
         this.roleService = rolService;
         this.permissionService = permissionService;
+        this.rolePermissionService = rolePermissionService;
     }
 
     // GET /api/roles - Obtener todos los roles
@@ -102,7 +105,7 @@ public class RoleController {
             .filter(p -> p != null)
             .collect(Collectors.toSet());
 
-    Role rolActualizado = roleService.assignPermission(rolId, permissions);
+    Role rolActualizado = rolePermissionService.assignPermission(rolId, permissions);
     return ResponseEntity.ok(rolActualizado);
   }
 }

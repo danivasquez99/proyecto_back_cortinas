@@ -1,4 +1,9 @@
 /*
+ * Clase no va es de DAO y esta mal pensada ya que es para relacion muchos a muchos entre usuario y rol
+ * y nosotros implementamos un rol por usuario
+ */
+
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */

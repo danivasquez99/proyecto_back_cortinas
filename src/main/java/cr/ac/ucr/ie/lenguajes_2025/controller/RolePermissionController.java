@@ -5,7 +5,6 @@
 package cr.ac.ucr.ie.lenguajes_2025.controller;
 
 import cr.ac.ucr.ie.lenguajes_2025.domain.Permission;
-import cr.ac.ucr.ie.lenguajes_2025.domain.RolePermission;
 import cr.ac.ucr.ie.lenguajes_2025.services.RolePermissionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,54 +20,33 @@ import java.util.LinkedList;
 @CrossOrigin(origins = "http://localhost:3000")
 public class RolePermissionController {
     
-    private final RolePermissionService rolePermissionService = new RolePermissionService();
+    private final RolePermissionService rolePermissionService;
 
+    public RolePermissionController(RolePermissionService rolePermissionService) {
+    this.rolePermissionService = rolePermissionService;
+}
 
-    // Obtener todas las asignaciones rol-permiso
-    @GetMapping("")
-    public ResponseEntity<LinkedList<RolePermission>> getAllRolePermissions() {
-        LinkedList<RolePermission> list = rolePermissionService.getAllRolePermissions();
-        if (list.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(list);
+    // Para recibir los IDs de rol y permiso
+    public static class RolePermissionDTO {
+        public int roleId;
+        public int permissionId;
     }
 
-    // Obtener permisos por id de rol (solo IDs)
-    @GetMapping("/role/{roleId}")
-    public ResponseEntity<LinkedList<RolePermission>> getPermissionsByRoleId(@PathVariable int roleId) {
-        LinkedList<RolePermission> list = rolePermissionService.getPermissionsByRoleId(roleId);
-        if (list.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(list);
-    }
-    
-    // Obtener roles por id de permiso
-    @GetMapping("/permission/{permissionId}")
-    public ResponseEntity<LinkedList<RolePermission>> getRolesByPermissionId(@PathVariable int permissionId) {
-        LinkedList<RolePermission> list = rolePermissionService.getRolesByPermissionId(permissionId);
-        if (list.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(list);
-    }
-
-    // Asignar permiso a rol
+    // Asignar permiso a un rol
     @PostMapping("")
-    public ResponseEntity<Void> assignPermissionToRole(@RequestBody RolePermission rolePermission) {
-        rolePermissionService.assignPermissionToRole(rolePermission);
+    public ResponseEntity<Void> assignPermissionToRole(@RequestBody RolePermissionDTO dto) {
+        rolePermissionService.assignPermissionToRole(dto.roleId, dto.permissionId);
         return ResponseEntity.ok().build();
     }
 
-    // Quitar permiso de rol
+    // Quitar permiso de un rol
     @DeleteMapping("")
     public ResponseEntity<Void> removePermissionFromRole(@RequestParam int roleId, @RequestParam int permissionId) {
         rolePermissionService.removePermissionFromRole(roleId, permissionId);
         return ResponseEntity.ok().build();
     }
 
-    // Obtener detalles de permisos por id de rol
+    // Obtener detalles de permisos por ID de rol
     @GetMapping("/role/{roleId}/permissions")
     public ResponseEntity<LinkedList<Permission>> getPermissionsDetailsByRoleId(@PathVariable int roleId) {
         LinkedList<Permission> permissions = rolePermissionService.getPermissionsDetailsByRoleId(roleId);
