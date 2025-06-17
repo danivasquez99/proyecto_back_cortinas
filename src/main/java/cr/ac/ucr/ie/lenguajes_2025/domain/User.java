@@ -1,31 +1,36 @@
 package cr.ac.ucr.ie.lenguajes_2025.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
 import java.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
 
-/**
- *
- * @author Daniel
- */
+@Entity
+@Table(name = "`user`") // Escapado por ser palabra reservada en SQL
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idUser;
+
     private String name;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+
     private LocalDate birthdate;
+
     private String email;
+
     private String password;
+
     private String urlProfilePicture;
+
     private String role;
+
     private boolean isActive;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+
     private LocalDate createdAt;
 
     public User() {
     }
 
-    public User(int idUser, String name, LocalDate birthdate, String email, String password, String urlProfilePicture, String role, boolean isActive) {
+    public User(int idUser, String name, LocalDate birthdate, String email, String password, String urlProfilePicture, String role, boolean isActive, LocalDate createdAt) {
         this.idUser = idUser;
         this.name = name;
         this.birthdate = birthdate;
@@ -34,6 +39,7 @@ public class User {
         this.urlProfilePicture = urlProfilePicture;
         this.role = role;
         this.isActive = isActive;
+        this.createdAt = createdAt;
     }
 
     public int getIdUser() {
@@ -107,4 +113,6 @@ public class User {
     public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
+    
+    
 }
