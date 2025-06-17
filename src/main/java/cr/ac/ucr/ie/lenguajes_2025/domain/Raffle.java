@@ -9,8 +9,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  *
@@ -46,6 +50,22 @@ public class Raffle {
 
     @Column(name = "created_at")
     private LocalDate creationdate;
+    
+    @ManyToMany
+    @JoinTable(
+    name = "raffle_product",
+    joinColumns = @JoinColumn(name = "raffle_id"),
+    inverseJoinColumns = @JoinColumn(name = "product_id")
+)
+private Set<Product> products;
+
+    @ManyToMany
+    @JoinTable(
+    name = "raffle_service",
+    joinColumns = @JoinColumn(name = "raffle_id"),
+    inverseJoinColumns = @JoinColumn(name = "service_id")
+)
+private Set<Service> services;
 
     public Raffle() {}
     
@@ -125,6 +145,22 @@ public class Raffle {
     public void setCreationdate(LocalDate creationdate) {
         this.creationdate = creationdate;
     }
+    
+    public Set<Product> getProducts() {
+    return products;
+}
+
+    public void setProducts(Set<Product> products) {
+    this.products = products;
+}
+
+    public Set<Service> getServices() {
+    return services;
+}
+
+    public void setServices(Set<Service> services) {
+    this.services = services;
+}
 
     @Override
     public String toString() {
