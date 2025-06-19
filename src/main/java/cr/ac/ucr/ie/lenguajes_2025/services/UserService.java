@@ -1,69 +1,72 @@
 package cr.ac.ucr.ie.lenguajes_2025.services;
 
-import cr.ac.ucr.ie.lenguajes_2025.dao_implement.UserDAOImplement;
 import cr.ac.ucr.ie.lenguajes_2025.domain.User;
-import java.util.LinkedList;
+import cr.ac.ucr.ie.lenguajes_2025.repository.UserRepository;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author Daniel
  */
+@Service
 public class UserService {
     
-    private static UserDAOImplement service = new UserDAOImplement();
+    private final UserRepository repo;
+    private final UserImageService imageService;
 
-    public UserService() {}
+    @Autowired
+     public UserService(UserRepository repo, UserImageService imageService) {
+         this.repo = repo;
+         this.imageService = imageService;
+     }
     
-    public static LinkedList<User> getAllUsers(){
-        return service.getAll();
+    public List<User> getAllUsers(){
+        return repo.findAll();
     }
     
-    public static User getUserById(int id){
-        return service.findById(id);
+    public User getUserById(int id){
+        return repo.findById(id).get();
     }
     
-    public static void insertUser(User newUser){
-        service.insert(newUser);
+    public void insertUser(User newUser){
+        repo.save(newUser);
     }
     
-    public static void updateUser(User modifyUser){
-        service.update(modifyUser);
+    public void updateUser(User modifyUser){
+        repo.save(modifyUser);
     }
     
-    public static void deleteUser(int userId){
-        service.deleteById(userId);
+    public void deleteUser(int userId){
+        repo.deleteById(userId);
     }
     
-    public static User login(String email, String password){
-        return service.login(email, password);
+    public User login(String email, String password){
+        return this.repo.findByEmailAndPassword(email, password);
     }
     
-    public static void insertUserWithImage(User user, MultipartFile imageFile) throws Exception {
-        service.insert(user);
+    public void insertUserWithImage(User user, MultipartFile imageFile) throws Exception {
 
-        User lastInsertedUser = service.getLastInsertedUser();
+        User lastInsertedUser = this.repo.save(user);
 
         String imageUrl = UserImageService.saveUserImage(imageFile);
 
         lastInsertedUser.setUrlProfilePicture(imageUrl);
-        service.update(lastInsertedUser);
+        this.repo.save(user);
     }
     
-    public static void updateUserWithImage(User user, MultipartFile imageFile) throws Exception {
+    public void updateUserWithImage(User user, MultipartFile imageFile) throws Exception {
         if (imageFile != null && !imageFile.isEmpty()) {
-            // 1. Guardar imagen nueva en disco
             String imageUrl = UserImageService.saveUserImage(imageFile);
 
-            // 2. Asignar la nueva URL
             user.setUrlProfilePicture(imageUrl);
         } else {
-            // 3. Mantener la imagen actual si no se sube una nueva
-            User existingUser = service.findById(user.getIdUser());
+            User existingUser = this.repo.findById(user.getIdUser()).get();
             user.setUrlProfilePicture(existingUser.getUrlProfilePicture());
+            this.repo.save(user);
         }
 
-        // 4. Actualizar promoción en DB
-        service.update(user);
     }
 }

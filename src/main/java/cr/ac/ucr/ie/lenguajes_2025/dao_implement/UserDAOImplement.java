@@ -9,6 +9,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
@@ -36,13 +38,13 @@ public class UserDAOImplement implements UserDAO {
                 user = new User();
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
-                user.setBirthdate(rs.getDate(3).toLocalDate());
+                user.setBirthdate(rs.getDate(3));
                 user.setEmail(rs.getString(4));
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
                 user.setIsActive("1".equals(rs.getString(8)));
-                user.setCreatedAt(rs.getDate(9).toLocalDate());
+                user.setCreatedAt(Timestamp.valueOf(rs.getDate(9).toString()));
                 
                 usersList.add(user);
             }
@@ -63,7 +65,7 @@ public class UserDAOImplement implements UserDAO {
             Connection cn = ConnectionDB.getConnection();
             PreparedStatement ps = cn.prepareStatement(sql.toString());
             ps.setString(1, t.getName());
-            ps.setDate(2, Date.valueOf(t.getBirthdate()));
+            ps.setDate(2, t.getBirthdate());
             ps.setString(3, t.getEmail());
             ps.setString(4, Utils.encryptSHA256(t.getPassword()));
             ps.setString(5, t.getUrlProfilePicture());
@@ -84,7 +86,7 @@ public class UserDAOImplement implements UserDAO {
             PreparedStatement ps = cn.prepareStatement(sql.toString());
             ps.setInt(1, t.getIdUser());
             ps.setString(2, t.getName());
-            ps.setDate(3, Date.valueOf(t.getBirthdate()));
+            ps.setDate(3, t.getBirthdate());
             ps.setString(4, t.getEmail());
             ps.setString(5, Utils.encryptSHA256(t.getPassword()));
             ps.setString(6, t.getUrlProfilePicture());
@@ -127,13 +129,13 @@ public class UserDAOImplement implements UserDAO {
             if (rs.next()) {
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
-                user.setBirthdate(rs.getDate(3).toLocalDate());
+                user.setBirthdate(rs.getDate(3));
                 user.setEmail(rs.getString(4));
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
                 user.setIsActive("1".equals(rs.getString(8)));
-                user.setCreatedAt(rs.getDate(9).toLocalDate());
+                user.setCreatedAt(Timestamp.from(Instant.MIN));
             }
 
         } catch (SQLException e) {
@@ -153,13 +155,13 @@ public class UserDAOImplement implements UserDAO {
                 user = new User();
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
-                user.setBirthdate(rs.getDate(3).toLocalDate());
+                user.setBirthdate(rs.getDate(3));
                 user.setEmail(rs.getString(4));
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
                 user.setIsActive("1".equals(rs.getString(8)));
-                user.setCreatedAt(rs.getDate(9).toLocalDate());
+                user.setCreatedAt(Timestamp.valueOf(rs.getDate(9).toString()));
             }
 
         } catch (SQLException e) {
@@ -193,7 +195,7 @@ public class UserDAOImplement implements UserDAO {
             if (rs.next()) {
                 userLogin.setIdUser(rs.getInt(1));
                 userLogin.setName(rs.getString(2));
-                userLogin.setBirthdate(LocalDate.parse(rs.getString(3)));
+                userLogin.setBirthdate(rs.getDate(3));
                 userLogin.setEmail(rs.getString(4));
                 userLogin.setPassword(rs.getString(5));
                 userLogin.setUrlProfilePicture(rs.getString(6));
