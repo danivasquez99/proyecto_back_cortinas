@@ -3,7 +3,7 @@ package cr.ac.ucr.ie.lenguajes_2025.dao_implement;
 import cr.ac.ucr.ie.lenguajes_2025.connection.ConnectionDB;
 import cr.ac.ucr.ie.lenguajes_2025.dao.UserDAO;
 import cr.ac.ucr.ie.lenguajes_2025.domain.User;
-import cr.ac.ucr.ie.lenguajes_2025.utils.Utils;
+import cr.ac.ucr.ie.lenguajes_2025.security.SecurityUtils;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -67,7 +67,7 @@ public class UserDAOImplement implements UserDAO {
             ps.setString(1, t.getName());
             ps.setDate(2, t.getBirthdate());
             ps.setString(3, t.getEmail());
-            ps.setString(4, Utils.encryptSHA256(t.getPassword()));
+            ps.setString(4, SecurityUtils.encryptSHA256(t.getPassword()));
             ps.setString(5, t.getUrlProfilePicture());
 
             ps.executeUpdate();
@@ -88,7 +88,7 @@ public class UserDAOImplement implements UserDAO {
             ps.setString(2, t.getName());
             ps.setDate(3, t.getBirthdate());
             ps.setString(4, t.getEmail());
-            ps.setString(5, Utils.encryptSHA256(t.getPassword()));
+            ps.setString(5, SecurityUtils.encryptSHA256(t.getPassword()));
             ps.setString(6, t.getUrlProfilePicture());
 
             ps.executeUpdate();
@@ -182,7 +182,7 @@ public class UserDAOImplement implements UserDAO {
         sql.append("CALL sp_login_user(?,?);");
 
         User userLogin = new User();
-        String encryptPassword = Utils.encryptSHA256(password);
+        String encryptPassword = SecurityUtils.encryptSHA256(password);
 
         try {
             Connection cn = ConnectionDB.getConnection();

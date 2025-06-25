@@ -1,7 +1,6 @@
 package cr.ac.ucr.ie.lenguajes_2025.controller;
 
 import cr.ac.ucr.ie.lenguajes_2025.domain.User;
-import cr.ac.ucr.ie.lenguajes_2025.dto.LoginRequest;
 import cr.ac.ucr.ie.lenguajes_2025.services.UserService;
 import java.sql.Date;
 import java.util.Collections;
@@ -36,7 +35,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    
+
     @GetMapping("/list")
     @ResponseBody
     public Map getList() {
@@ -101,7 +100,7 @@ public class UserController {
             @RequestParam String name,
             @RequestParam Date birthdate,
             @RequestParam String email,
-            @RequestParam String password,
+            @RequestParam(required = false) String password,
             @RequestParam(value = "image", required = false) MultipartFile image) {
 
         try {
@@ -131,10 +130,13 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseBody
-    public User login(@RequestBody LoginRequest loginRequest) {
-        String email = loginRequest.getEmail();
-        String password = loginRequest.getPassword();
+    public User findUserByEmail(@RequestBody String email) {
+        return userService.findUserByEmail(email);
+    }
 
-        return userService.login(email, password);
+    @GetMapping("/existsByEmail")
+    public ResponseEntity<Boolean> emailExists(@RequestParam String email) {
+        User existingUser = userService.findUserByEmail(email);
+        return ResponseEntity.ok(existingUser != null);
     }
 }

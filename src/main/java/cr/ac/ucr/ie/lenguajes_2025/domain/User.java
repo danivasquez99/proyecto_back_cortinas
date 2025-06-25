@@ -22,13 +22,26 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idUser")
     private int idUser;
+    
+    @Column(name = "name")
     private String name;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    
+    @Column(name = "birthdate")
     private Date birthdate;
+    
+    @Column(name = "email", unique = true)
     private String email;
+    
+    @Column(name = "password")
     private String password;
+    
+    @Column(name = "urlProfilePicture")
     private String urlProfilePicture;
+    
+    @Column(name = "role")
     private String role;
+    
+    @Column(name = "isActive")
     private boolean isActive;
     
     @Column(name = "created_at", insertable = false, updatable = false)

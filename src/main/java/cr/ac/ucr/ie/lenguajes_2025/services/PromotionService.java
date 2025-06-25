@@ -18,17 +18,15 @@ public class PromotionService {
     private final PromotionImageService imageService;
 
     @Autowired
-     public PromotionService(PromotionRepository repo, PromotionImageService imageService) {
-         this.repo = repo;
-         this.imageService = imageService;
-     }
-
+    public PromotionService(PromotionRepository repo, PromotionImageService imageService) {
+        this.repo = repo;
+        this.imageService = imageService;
+    }
 
     public List<Promotion> getAllPromotions() {
         return repo.findAll();
     }
 
-   
     public Promotion getPromotionById(int id) {
         return repo.findById(id).get();
     }
@@ -51,7 +49,6 @@ public class PromotionService {
         String imageUrl = PromotionImageService.savePromotionImage(imageFile);
 
         // 4. Asignar URL a la promoción y actualizarla
-        
         lastInsertedPromotion.setImageUrl(imageUrl);
         repo.save(lastInsertedPromotion);
     }
@@ -59,14 +56,13 @@ public class PromotionService {
     public void updatePromotionWithImage(Promotion promotion, MultipartFile imageFile) throws Exception {
         if (imageFile != null && !imageFile.isEmpty()) {
             String imageUrl = PromotionImageService.savePromotionImage(imageFile);
-
             promotion.setImageUrl(imageUrl);
         } else {
-            Promotion existingPromotion = repo.findById(promotion.getIdPromotion()).get();
-            promotion.setImageUrl(existingPromotion.getImageUrl());
-            repo.save(existingPromotion);
+            Promotion existing = repo.findById(promotion.getIdPromotion()).get();
+            promotion.setImageUrl(existing.getImageUrl()); // <- mantener la imagen actual
         }
-        
+        repo.save(promotion);
+
     }
 
 }
