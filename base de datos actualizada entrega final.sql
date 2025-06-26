@@ -5,6 +5,19 @@ USE lenguajes_2025;
 -- Crear tablas
 DROP TABLE IF EXISTS `order`, product, promotion, quotation, raffle, service, user;
 
+CREATE TABLE user (
+  idUser INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100),
+  birthdate DATE,
+  email VARCHAR(45),
+  password VARCHAR(45),
+  urlProfilePicture VARCHAR(255),
+  role VARCHAR(20) DEFAULT 'cliente',
+  isActive CHAR(1) DEFAULT '1',
+  creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (idUser)
+);
+
 CREATE TABLE `order` (
   idOrder INT NOT NULL AUTO_INCREMENT,
   status VARCHAR(25),
@@ -73,19 +86,6 @@ CREATE TABLE service (
   status CHAR(1) DEFAULT '1',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (idService)
-);
-
-CREATE TABLE user (
-  idUser INT NOT NULL AUTO_INCREMENT,
-  name VARCHAR(100),
-  birthdate DATE,
-  email VARCHAR(45),
-  password VARCHAR(45),
-  urlProfilePicture VARCHAR(255),
-  role VARCHAR(20) DEFAULT 'cliente',
-  isActive CHAR(1) DEFAULT '1',
-  creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (idUser)
 );
 
 -- Insertar datos de prueba

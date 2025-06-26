@@ -2,6 +2,7 @@ package cr.ac.ucr.ie.lenguajes_2025.controller;
 
 import cr.ac.ucr.ie.lenguajes_2025.domain.Quotation;
 import cr.ac.ucr.ie.lenguajes_2025.services.QuotationService;
+import java.sql.Timestamp;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,10 +29,13 @@ public class QuotationController {
         return quotationService.obtenerPorId(id);
     }
 
-    @PostMapping
-    public Quotation create(@RequestBody Quotation quotation) {
-        return quotationService.guardar(quotation);
-    }
+   @PostMapping
+public Quotation create(@RequestBody Quotation quotation) {
+    // Asegurarse de que la creación de la cotización no pase la fecha de creación
+    quotation.setCreationDate(new Timestamp(System.currentTimeMillis())); // Esto es para establecer la fecha actual
+    return quotationService.guardar(quotation);
+}
+
 
     @PutMapping("/{id}")
     public Quotation update(@PathVariable int id, @RequestBody Quotation quotation) {
@@ -43,4 +47,8 @@ public class QuotationController {
     public void delete(@PathVariable int id) {
         quotationService.eliminar(id);
     }
+    
+    
+
+    
 }

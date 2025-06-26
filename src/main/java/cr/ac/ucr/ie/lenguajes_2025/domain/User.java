@@ -1,28 +1,56 @@
 package cr.ac.ucr.ie.lenguajes_2025.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  *
  * @author Daniel
  */
+@Entity
+@Table(name = "`user`")
 public class User {
- 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idUser")
     private int idUser;
+    
+    @Column(name = "name")
     private String name;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate birthdate;
+    
+    @Column(name = "birthdate")
+    private Date birthdate;
+    
+    @Column(name = "email", unique = true)
     private String email;
+    
+    @Column(name = "password")
     private String password;
+    
+    @Column(name = "urlProfilePicture")
     private String urlProfilePicture;
+    
+    @Column(name = "role")
     private String role;
+    
+    @Column(name = "isActive")
     private boolean isActive;
+    
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Timestamp createdAt;
 
-    public User() {}
+    public User() {
+    }
 
-    public User(int idUser, String name, LocalDate birthdate, String email, String password, String urlProfilePicture, String role, boolean isActive) {
+    public User(int idUser, String name, Date birthdate, String email, String password, String urlProfilePicture, String role, boolean isActive) {
         this.idUser = idUser;
         this.name = name;
         this.birthdate = birthdate;
@@ -49,11 +77,11 @@ public class User {
         this.name = name;
     }
 
-    public LocalDate getBirthdate() {
+    public Date getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(LocalDate birthdate) {
+    public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
     }
 
@@ -96,5 +124,12 @@ public class User {
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
     }
-    
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
 }

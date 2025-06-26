@@ -2,6 +2,7 @@ package cr.ac.ucr.ie.lenguajes_2025.controller;
 
 import cr.ac.ucr.ie.lenguajes_2025.domain.Product;
 import cr.ac.ucr.ie.lenguajes_2025.services.ProductServices;
+import java.text.SimpleDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +67,7 @@ public class ProductController {
             @RequestParam String description,
             @RequestParam double price,
             @RequestParam(required = false, defaultValue = "0") Integer stock,
+            @RequestParam String entryDate, // <-- formato dd-MM-yyyy
             @RequestParam("image") MultipartFile image) {
         try {
             Product product = new Product();
@@ -73,6 +75,12 @@ public class ProductController {
             product.setDetails(description);
             product.setPrice((float) price);
             product.setStock(stock);
+
+            // Parsear string a Date con formato dd-MM-yyyy
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            java.util.Date utilDate = formatter.parse(entryDate);
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+            product.setEntryDate(sqlDate); // <-- setear la fecha convertida
 
             Product savedProduct = productServices.insertProductWithImage(product, image);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);

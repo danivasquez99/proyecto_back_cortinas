@@ -3,12 +3,14 @@ package cr.ac.ucr.ie.lenguajes_2025.dao_implement;
 import cr.ac.ucr.ie.lenguajes_2025.connection.ConnectionDB;
 import cr.ac.ucr.ie.lenguajes_2025.dao.UserDAO;
 import cr.ac.ucr.ie.lenguajes_2025.domain.User;
-import cr.ac.ucr.ie.lenguajes_2025.utils.Utils;
+import cr.ac.ucr.ie.lenguajes_2025.security.SecurityUtils;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
@@ -23,9 +25,7 @@ public class UserDAOImplement implements UserDAO {
         LinkedList<User> usersList = new LinkedList<User>();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT idUser, name, birthdate, email, password, ");
-        sql.append("urlProfilePicture, role, isActive, creationDate ");
-        sql.append("FROM user WHERE isActive = 1");
+        sql.append("CALL sp_get_all_users();");
 
         try {
             Connection cn = ConnectionDB.getConnection();
@@ -38,15 +38,14 @@ public class UserDAOImplement implements UserDAO {
                 user = new User();
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
-
-                Date birthdateSql = rs.getDate("birthdate");
-                user.setBirthdate(birthdateSql != null ? birthdateSql.toLocalDate() : null);
+                user.setBirthdate(rs.getDate(3));
                 user.setEmail(rs.getString(4));
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
-                user.setIsActive(rs.getString(8) == "1" ? true : false);
-
+                user.setIsActive("1".equals(rs.getString(8)));
+                user.setCreatedAt(Timestamp.valueOf(rs.getDate(9).toString()));
+                
                 usersList.add(user);
             }
 
@@ -60,18 +59,15 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public void insert(User t) {
         StringBuilder sql = new StringBuilder();
-        sql.append("INSERT INTO user");
-        sql.append("(name, birthdate, email, ");
-        sql.append("password, urlProfilePicture) ");
-        sql.append("VALUES (?,?,?,?,?)");
+        sql.append("CALL sp_insert_user(?,?,?,?,?);");
 
         try {
             Connection cn = ConnectionDB.getConnection();
             PreparedStatement ps = cn.prepareStatement(sql.toString());
             ps.setString(1, t.getName());
-            ps.setDate(2, Date.valueOf(t.getBirthdate()));
+            ps.setDate(2, t.getBirthdate());
             ps.setString(3, t.getEmail());
-            ps.setString(4, Utils.encryptSHA256(t.getPassword()));
+            ps.setString(4, SecurityUtils.encryptSHA256(t.getPassword()));
             ps.setString(5, t.getUrlProfilePicture());
 
             ps.executeUpdate();
@@ -83,19 +79,16 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public void update(User t) {
         StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE user SET ");
-        sql.append("idUser=?, name=?, birthdate=?, ");
-        sql.append(" email=?, password=?, urlProfilePicture=? ");
-        sql.append("WHERE idUser=?");
+        sql.append("CALL sp_update_user(?,?,?,?,?,?);");
 
         try {
             Connection cn = ConnectionDB.getConnection();
             PreparedStatement ps = cn.prepareStatement(sql.toString());
             ps.setInt(1, t.getIdUser());
             ps.setString(2, t.getName());
-            ps.setDate(3, Date.valueOf(t.getBirthdate()));
+            ps.setDate(3, t.getBirthdate());
             ps.setString(4, t.getEmail());
-            ps.setString(5, Utils.encryptSHA256(t.getPassword()));
+            ps.setString(5, SecurityUtils.encryptSHA256(t.getPassword()));
             ps.setString(6, t.getUrlProfilePicture());
 
             ps.executeUpdate();
@@ -107,8 +100,7 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public void deleteById(Integer t) {
         StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE user SET isActive=0 ");
-        sql.append("WHERE idUser=?");
+        sql.append("CALL sp_delete_user(?);");
 
         try {
             Connection cn = ConnectionDB.getConnection();
@@ -126,9 +118,7 @@ public class UserDAOImplement implements UserDAO {
         User user = new User();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT idUser, name, birthdate, email, password, ");
-        sql.append("urlProfileImage, role, isActive ");
-        sql.append("FROM user WHERE idUser=?");
+        sql.append("CALL sp_find_user_by_id(?);");
 
         try {
             Connection cn = ConnectionDB.getConnection();
@@ -139,12 +129,13 @@ public class UserDAOImplement implements UserDAO {
             if (rs.next()) {
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
-                user.setBirthdate(LocalDate.parse(rs.getString(3)));
+                user.setBirthdate(rs.getDate(3));
                 user.setEmail(rs.getString(4));
                 user.setPassword(rs.getString(5));
                 user.setUrlProfilePicture(rs.getString(6));
                 user.setRole(rs.getString(7));
-                user.setIsActive(rs.getString(8).equals("1"));
+                user.setIsActive("1".equals(rs.getString(8)));
+                user.setCreatedAt(Timestamp.from(Instant.MIN));
             }
 
         } catch (SQLException e) {
@@ -154,6 +145,32 @@ public class UserDAOImplement implements UserDAO {
         return user;
     }
 
+    public User getLastInsertedUser() {
+        User user = null;
+        String sql = "SELECT * FROM user ORDER BY idUser DESC LIMIT 1";
+
+        try (Connection cn = ConnectionDB.getConnection(); PreparedStatement ps = cn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                user = new User();
+                user.setIdUser(rs.getInt(1));
+                user.setName(rs.getString(2));
+                user.setBirthdate(rs.getDate(3));
+                user.setEmail(rs.getString(4));
+                user.setPassword(rs.getString(5));
+                user.setUrlProfilePicture(rs.getString(6));
+                user.setRole(rs.getString(7));
+                user.setIsActive("1".equals(rs.getString(8)));
+                user.setCreatedAt(Timestamp.valueOf(rs.getDate(9).toString()));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener el último usuario: " + e.getMessage());
+        }
+
+        return user;
+    }
+    
     @Override
     public boolean validateExistingEmail(String email) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -162,12 +179,10 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public User login(String email, String password) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT idUser, name, birthdate, email, password, ");
-        sql.append("urlProfilePicture, role, isActive ");
-        sql.append("FROM user WHERE email=? AND password=?;");
+        sql.append("CALL sp_login_user(?,?);");
 
         User userLogin = new User();
-        String encryptPassword = Utils.encryptSHA256(password);
+        String encryptPassword = SecurityUtils.encryptSHA256(password);
 
         try {
             Connection cn = ConnectionDB.getConnection();
@@ -180,7 +195,7 @@ public class UserDAOImplement implements UserDAO {
             if (rs.next()) {
                 userLogin.setIdUser(rs.getInt(1));
                 userLogin.setName(rs.getString(2));
-                userLogin.setBirthdate(LocalDate.parse(rs.getString(3)));
+                userLogin.setBirthdate(rs.getDate(3));
                 userLogin.setEmail(rs.getString(4));
                 userLogin.setPassword(rs.getString(5));
                 userLogin.setUrlProfilePicture(rs.getString(6));

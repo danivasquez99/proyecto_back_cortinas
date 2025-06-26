@@ -33,6 +33,10 @@ public class Service {
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private Timestamp createdAt;
+    
+    @Column(name = "imageUrl")
+    private String imageUrl;
+
 
     public Service() {}
 
@@ -70,6 +74,20 @@ public class Service {
     public char getStatus() { return status; }
     public void setStatus(char status) { this.status = status; }
 
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
 }
