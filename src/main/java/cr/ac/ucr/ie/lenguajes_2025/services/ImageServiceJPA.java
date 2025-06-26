@@ -3,7 +3,6 @@ package cr.ac.ucr.ie.lenguajes_2025.services;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Product;
 import cr.ac.ucr.ie.lenguajes_2025.domain.ProductImage;
 import cr.ac.ucr.ie.lenguajes_2025.repository.ProductImageRepository;
-import cr.ac.ucr.ie.lenguajes_2025.services.ProductServices;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
