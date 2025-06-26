@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -34,11 +35,34 @@ public class RaffleService {
     public void addRaffle(Raffle raffle) {
         raffleRepository.save(raffle);
     }
+    
+    // Agregar sorteo con imagen
+    public void addRaffleWithImage(Raffle raffle, MultipartFile imageFile) throws Exception {
+        Raffle savedRaffle = raffleRepository.save(raffle);
+        String imageUrl = RaffleImageService.saveRaffleImage(imageFile);
+
+        savedRaffle.setImageurl(imageUrl);
+        raffleRepository.save(savedRaffle);
+    }
 
     // Actualizar un sorteo existente
     public void updateRaffle(Raffle raffle) {
         raffleRepository.save(raffle);
     }
+    
+    // Actualizar sorteo con imagen
+    public void updateRaffleWithImage(Raffle raffle, MultipartFile imageFile) throws Exception {
+    if (imageFile != null && !imageFile.isEmpty()) {
+        String imageUrl = RaffleImageService.saveRaffleImage(imageFile);
+        raffle.setImageurl(imageUrl);
+    } else {
+        Raffle existing = raffleRepository.findById(raffle.getId()).orElse(null);
+        if (existing != null) {
+            raffle.setImageurl(existing.getImageurl());
+        }
+    }
+    raffleRepository.save(raffle);
+}
 
     // Eliminar un sorteo por ID
     public void deleteRaffleById(int idRaffle) {

@@ -50,14 +50,14 @@ public class Raffle {
 
     @Column(name = "created_at")
     private LocalDate creationdate;
-    
+    /*
     @ManyToMany
     @JoinTable(
     name = "raffle_product",
     joinColumns = @JoinColumn(name = "raffle_id"),
     inverseJoinColumns = @JoinColumn(name = "product_id")
 )
-private Set<Product> products;
+    private Set<Product> products;
 
     @ManyToMany
     @JoinTable(
@@ -66,7 +66,7 @@ private Set<Product> products;
     inverseJoinColumns = @JoinColumn(name = "service_id")
 )
 private Set<Service> services;
-
+*/
     public Raffle() {}
     
     public Raffle(int id, String title, String description, String conditions, LocalDate raffledate, String status, String imageurl, LocalDate creationdate) {
@@ -145,7 +145,7 @@ private Set<Service> services;
     public void setCreationdate(LocalDate creationdate) {
         this.creationdate = creationdate;
     }
-    
+    /*
     public Set<Product> getProducts() {
     return products;
 }
@@ -161,7 +161,7 @@ private Set<Service> services;
     public void setServices(Set<Service> services) {
     this.services = services;
 }
-
+*/
     @Override
     public String toString() {
         return "Raffle{" + "id=" + id + ", title=" + title + ", description=" + description + ", conditions=" + conditions + ", raffledate=" + raffledate + ", status=" + status + ", imageurl=" + imageurl + ", creationdate=" + creationdate + '}';
