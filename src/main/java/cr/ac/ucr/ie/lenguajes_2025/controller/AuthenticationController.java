@@ -32,12 +32,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
-        String password = loginData.get("password");
-
-        // para cuando tenga bien validado lo del jwt
-        // falta validar correos unicos
-        // en el insert user con jpa, tengo que encriptar contraseña
-        //String password = SecurityUtils.encryptSHA256(loginData.get("password"));
+        String password = SecurityUtils.encryptSHA256(loginData.get("password"));
         
         User user = userRepository.findByEmail(email);
 

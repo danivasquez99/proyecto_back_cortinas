@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,19 +36,21 @@ public class PromotionController {
     }
     
     @GetMapping("/list")
-    @ResponseBody
     public Map getList() {
         return Collections.singletonMap("data", promotionService.getAllPromotions());
     }
 
+    @GetMapping("/enabled")
+    public Map getEnabledPromotions() {
+        return Collections.singletonMap("data", promotionService.getEnabledPromotions());
+    }
+    
     @GetMapping("/getById")
-    @ResponseBody
     public Promotion findPromotionById(@RequestParam int promotionId) {
         return promotionService.getPromotionById(promotionId);
     }
 
     @PostMapping("/create")
-    @ResponseBody
     public Map insertPromotion(@RequestBody Promotion promotion) {
         promotionService.insertPromotion(promotion);
         return getList();
@@ -90,7 +91,6 @@ public class PromotionController {
     }
 
     @PutMapping("/update")
-    @ResponseBody
     public Map updatePromotion(@RequestBody Promotion promotion) {
         promotionService.updatePromotion(promotion);
         return getList();
@@ -124,7 +124,6 @@ public class PromotionController {
     }
 
     @DeleteMapping("/delete")
-    @ResponseBody
     public Map deletePromotion(@RequestParam int promotionId) {
         promotionService.deletePromotion(promotionId);
         return getList();

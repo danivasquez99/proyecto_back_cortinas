@@ -27,6 +27,10 @@ public class PromotionService {
         return repo.findAll();
     }
 
+    public List<Promotion> getEnabledPromotions() {
+        return repo.getEnabledPromotions();
+    }
+    
     public Promotion getPromotionById(int id) {
         return repo.findById(id).get();
     }
@@ -62,7 +66,6 @@ public class PromotionService {
             promotion.setImageUrl(existing.getImageUrl()); // <- mantener la imagen actual
         }
         repo.save(promotion);
-
     }
 
 }

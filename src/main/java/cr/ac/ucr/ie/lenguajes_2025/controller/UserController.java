@@ -37,26 +37,22 @@ public class UserController {
     }
 
     @GetMapping("/list")
-    @ResponseBody
     public Map getList() {
         return Collections.singletonMap("data", userService.getAllUsers());
     }
 
     @GetMapping("/getById")
-    @ResponseBody
     public User findUserById(@RequestParam int userId) {
         return userService.getUserById(userId);
     }
 
     @PostMapping("/insert")
-    @ResponseBody
     public Map insertUser(@RequestBody User user) {
         userService.insertUser(user);
         return getList();
     }
 
     @PutMapping("/update")
-    @ResponseBody
     public Map updateUser(@RequestBody User user) {
         userService.updateUser(user);
         return getList();
@@ -122,7 +118,6 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    @ResponseBody
     public Map deleteUser(@RequestParam int userId) {
         userService.deleteUser(userId);
         return getList();

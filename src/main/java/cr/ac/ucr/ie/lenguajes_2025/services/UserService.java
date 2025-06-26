@@ -2,6 +2,7 @@ package cr.ac.ucr.ie.lenguajes_2025.services;
 
 import cr.ac.ucr.ie.lenguajes_2025.domain.User;
 import cr.ac.ucr.ie.lenguajes_2025.repository.UserRepository;
+import cr.ac.ucr.ie.lenguajes_2025.security.SecurityUtils;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,8 @@ public class UserService {
     }
 
     public void insertUser(User newUser) {
+        String encryptedPassword = SecurityUtils.encryptSHA256(newUser.getPassword());
+        newUser.setPassword(encryptedPassword);
         repo.save(newUser);
     }
 
@@ -44,6 +47,8 @@ public class UserService {
     }
 
     public void insertUserWithImage(User user, MultipartFile imageFile) throws Exception {
+        String encryptedPassword = SecurityUtils.encryptSHA256(user.getPassword());
+        user.setPassword(encryptedPassword);
 
         User lastInsertedUser = this.repo.save(user);
 
@@ -60,6 +65,8 @@ public class UserService {
         // Mantener la contraseña si no se envía
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
             user.setPassword(existingUser.getPassword());
+        } else {
+            user.setPassword(SecurityUtils.encryptSHA256(user.getPassword()));
         }
 
         // Mantener la URL de la imagen si no se envía en la petición
@@ -76,6 +83,8 @@ public class UserService {
         // Mantener contraseña actual si no se envía una nueva
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
             user.setPassword(existingUser.getPassword());
+        } else {
+            user.setPassword(SecurityUtils.encryptSHA256(user.getPassword()));
         }
 
         // Manejar imagen
