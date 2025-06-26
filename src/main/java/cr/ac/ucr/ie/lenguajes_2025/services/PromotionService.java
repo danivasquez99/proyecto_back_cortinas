@@ -1,72 +1,68 @@
 package cr.ac.ucr.ie.lenguajes_2025.services;
 
-import cr.ac.ucr.ie.lenguajes_2025.dao_implement.PromotionDAOImplement;
 import cr.ac.ucr.ie.lenguajes_2025.domain.Promotion;
-import java.util.LinkedList;
+import cr.ac.ucr.ie.lenguajes_2025.repository.PromotionRepository;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author Daniel
  */
+@Service
 public class PromotionService {
 
-    private static PromotionDAOImplement service = new PromotionDAOImplement();
+    private final PromotionRepository repo;
+    private final PromotionImageService imageService;
 
-    ;
-
-    public PromotionService() {}
-
-    public static LinkedList<Promotion> getAllPromotions() {
-        return service.getAll();
+    @Autowired
+    public PromotionService(PromotionRepository repo, PromotionImageService imageService) {
+        this.repo = repo;
+        this.imageService = imageService;
     }
 
-    public static Promotion getPromotionById(int id) {
-        return service.findById(id);
+    public List<Promotion> getAllPromotions() {
+        return repo.findAll();
     }
 
-    public static void insertPromotion(Promotion newPromotion) {
-        service.insert(newPromotion);
+    public Promotion getPromotionById(int id) {
+        return repo.findById(id).get();
     }
 
-    public static void updatePromotion(Promotion modifyPromotion) {
-        service.update(modifyPromotion);
+    public void insertPromotion(Promotion newPromotion) {
+        repo.save(newPromotion);
     }
 
-    public static void deletePromotion(int promotionId) {
-        service.deleteById(promotionId);
+    public void updatePromotion(Promotion modifyPromotion) {
+        repo.save(modifyPromotion);
     }
 
-    public static void insertPromotionWithImage(Promotion promotion, MultipartFile imageFile) throws Exception {
-        // 1. Insertar primero la promoción sin imagen
-        service.insert(promotion);
+    public void deletePromotion(int promotionId) {
+        repo.deleteById(promotionId);
+    }
 
-        // 2. Obtener la última promoción insertada (para conocer su ID)
-        Promotion lastInsertedPromotion = service.getLastInsertedPromotion();
+    public void insertPromotionWithImage(Promotion promotion, MultipartFile imageFile) throws Exception {
+        Promotion lastInsertedPromotion = repo.save(promotion);
 
-        // 3. Guardar la imagen en disco y obtener la URL
         String imageUrl = PromotionImageService.savePromotionImage(imageFile);
 
         // 4. Asignar URL a la promoción y actualizarla
         lastInsertedPromotion.setImageUrl(imageUrl);
-        service.update(lastInsertedPromotion);
+        repo.save(lastInsertedPromotion);
     }
 
-    public static void updatePromotionWithImage(Promotion promotion, MultipartFile imageFile) throws Exception {
+    public void updatePromotionWithImage(Promotion promotion, MultipartFile imageFile) throws Exception {
         if (imageFile != null && !imageFile.isEmpty()) {
-            // 1. Guardar imagen nueva en disco
             String imageUrl = PromotionImageService.savePromotionImage(imageFile);
-
-            // 2. Asignar la nueva URL
             promotion.setImageUrl(imageUrl);
         } else {
-            // 3. Mantener la imagen actual si no se sube una nueva
-            Promotion existingPromotion = service.findById(promotion.getIdPromotion());
-            promotion.setImageUrl(existingPromotion.getImageUrl());
+            Promotion existing = repo.findById(promotion.getIdPromotion()).get();
+            promotion.setImageUrl(existing.getImageUrl()); // <- mantener la imagen actual
         }
+        repo.save(promotion);
 
-        // 4. Actualizar promoción en DB
-        service.update(promotion);
     }
 
 }

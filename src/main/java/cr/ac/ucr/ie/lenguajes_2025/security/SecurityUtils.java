@@ -1,11 +1,11 @@
-package cr.ac.ucr.ie.lenguajes_2025.utils;
+package cr.ac.ucr.ie.lenguajes_2025.security;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Utils {
+public class SecurityUtils {
 
     // Método para encriptar texto con SHA-256
     public static String encryptSHA256(String text) {

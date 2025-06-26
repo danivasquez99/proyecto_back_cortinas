@@ -2,12 +2,12 @@ package cr.ac.ucr.ie.lenguajes_2025.controller;
 
 import cr.ac.ucr.ie.lenguajes_2025.domain.Promotion;
 import cr.ac.ucr.ie.lenguajes_2025.services.PromotionService;
-import java.time.LocalDate;
+import java.sql.Date;
 import java.util.Collections;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,33 +17,41 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author Daniel
  */
-@Controller
-@CrossOrigin(origins = "http://localhost:3000")
+@RestController
 @RequestMapping("api/promotions")
+@CrossOrigin(origins = "http://localhost:3000")
 public class PromotionController {
 
+    private final PromotionService promotionService;
+    
+    @Autowired
+    public PromotionController(PromotionService promotionService) {
+        this.promotionService = promotionService;
+    }
+    
     @GetMapping("/list")
     @ResponseBody
     public Map getList() {
-        return Collections.singletonMap("data", PromotionService.getAllPromotions());
+        return Collections.singletonMap("data", promotionService.getAllPromotions());
     }
 
     @GetMapping("/getById")
     @ResponseBody
     public Promotion findPromotionById(@RequestParam int promotionId) {
-        return PromotionService.getPromotionById(promotionId);
+        return promotionService.getPromotionById(promotionId);
     }
 
     @PostMapping("/create")
     @ResponseBody
     public Map insertPromotion(@RequestBody Promotion promotion) {
-        PromotionService.insertPromotion(promotion);
+        promotionService.insertPromotion(promotion);
         return getList();
     }
 
@@ -51,8 +59,8 @@ public class PromotionController {
     public ResponseEntity<Void> insertPromotionWithImage(
             @RequestParam String title,
             @RequestParam float discount,
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate,
+            @RequestParam Date startDate,
+            @RequestParam Date endDate,
             @RequestParam("image") MultipartFile image) {
         try {
             Promotion promotion = new Promotion();
@@ -63,7 +71,7 @@ public class PromotionController {
 
             try {
                 // Usar el método existente que maneja la inserción completa
-                PromotionService.insertPromotionWithImage(promotion, image);
+                promotionService.insertPromotionWithImage(promotion, image);
 
                 // Crear ubicación del recurso con URL absoluta
                 String locationPath = "/api/promotions/" + promotion.getIdPromotion();
@@ -84,7 +92,7 @@ public class PromotionController {
     @PutMapping("/update")
     @ResponseBody
     public Map updatePromotion(@RequestBody Promotion promotion) {
-        PromotionService.updatePromotion(promotion);
+        promotionService.updatePromotion(promotion);
         return getList();
     }
 
@@ -93,8 +101,8 @@ public class PromotionController {
             @RequestParam int idPromotion,
             @RequestParam String title,
             @RequestParam float discount,
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate,
+            @RequestParam Date startDate,
+            @RequestParam Date endDate,
             @RequestParam(value = "image", required = false) MultipartFile image) {
 
         try {
@@ -106,7 +114,7 @@ public class PromotionController {
             promotion.setEndDate(endDate);
 
             // Servicio se encarga de actualizar imagen si viene una nueva
-            PromotionService.updatePromotionWithImage(promotion, image);
+            promotionService.updatePromotionWithImage(promotion, image);
 
             return ResponseEntity.noContent().build(); // 204 No Content
         } catch (Exception e) {
@@ -118,7 +126,7 @@ public class PromotionController {
     @DeleteMapping("/delete")
     @ResponseBody
     public Map deletePromotion(@RequestParam int promotionId) {
-        PromotionService.deletePromotion(promotionId);
+        promotionService.deletePromotion(promotionId);
         return getList();
     }
 }

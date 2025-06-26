@@ -8,6 +8,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 
 /**
@@ -30,10 +31,10 @@ public class PromotionDAOImplement implements PromotionDAO {
                 promotion.setIdPromotion(rs.getInt("idPromotion"));
                 promotion.setTitle(rs.getString("title"));
                 promotion.setDiscount(rs.getFloat("discount"));
-                promotion.setStartDate(rs.getDate("startDate").toLocalDate());
-                promotion.setEndDate(rs.getDate("endDate").toLocalDate());
+                promotion.setStartDate(rs.getDate("startDate"));
+                promotion.setEndDate(rs.getDate("endDate"));
                 promotion.setImageUrl(rs.getString("imageUrl"));
-                promotion.setCreatedAt(rs.getDate("created_at").toLocalDate());
+                promotion.setCreatedAt(Timestamp.valueOf(rs.getDate("created_at").toString()));
                 promotions.add(promotion);
             }
 
@@ -55,8 +56,8 @@ public class PromotionDAOImplement implements PromotionDAO {
 
             ps.setString(1, t.getTitle());
             ps.setFloat(2, t.getDiscount());
-            ps.setDate(3, Date.valueOf(t.getStartDate()));
-            ps.setDate(4, Date.valueOf(t.getEndDate()));
+            ps.setDate(3, t.getStartDate());
+            ps.setDate(4, t.getEndDate());
             ps.setString(5, t.getImageUrl());
 
             ps.executeUpdate();
@@ -121,10 +122,10 @@ public class PromotionDAOImplement implements PromotionDAO {
                 promotion.setIdPromotion(rs.getInt("idPromotion"));
                 promotion.setTitle(rs.getString("title"));
                 promotion.setDiscount(rs.getFloat("discount"));
-                promotion.setStartDate(rs.getDate("startDate").toLocalDate());
-                promotion.setEndDate(rs.getDate("endDate").toLocalDate());
+                promotion.setStartDate(rs.getDate("startDate"));
+                promotion.setEndDate(rs.getDate("endDate"));
                 promotion.setImageUrl(rs.getString("imageUrl"));
-                promotion.setCreatedAt(rs.getDate("created_at").toLocalDate());
+                promotion.setCreatedAt(Timestamp.valueOf(rs.getDate("created_at").toString()));
             }
         } catch (SQLException e) {
             System.err.println("Error al cargar la promoción: " + e.getMessage());
@@ -144,10 +145,10 @@ public class PromotionDAOImplement implements PromotionDAO {
                 promotion.setIdPromotion(rs.getInt("idPromotion"));
                 promotion.setTitle(rs.getString("title"));
                 promotion.setDiscount(rs.getFloat("discount"));
-                promotion.setStartDate(rs.getDate("startDate").toLocalDate());
-                promotion.setEndDate(rs.getDate("endDate").toLocalDate());
+                promotion.setStartDate(rs.getDate("startDate"));
+                promotion.setEndDate(rs.getDate("endDate"));
                 promotion.setImageUrl(rs.getString("imageUrl"));
-                promotion.setCreatedAt(rs.getDate("created_at").toLocalDate());
+                promotion.setCreatedAt(Timestamp.valueOf(rs.getDate("created_at").toString()));
             }
 
         } catch (SQLException e) {

@@ -6,7 +6,9 @@
 package cr.ac.ucr.ie.lenguajes_2025.controller;
 
 import cr.ac.ucr.ie.lenguajes_2025.domain.User;
+import cr.ac.ucr.ie.lenguajes_2025.security.JwtUtils;
 import cr.ac.ucr.ie.lenguajes_2025.services.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
+    
     private final AuthService authService = new AuthService();
+    
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestParam String email, @RequestParam String password) {

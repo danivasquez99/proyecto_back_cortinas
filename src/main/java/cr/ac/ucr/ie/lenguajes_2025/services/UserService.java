@@ -1,69 +1,92 @@
 package cr.ac.ucr.ie.lenguajes_2025.services;
 
-import cr.ac.ucr.ie.lenguajes_2025.dao_implement.UserDAOImplement;
 import cr.ac.ucr.ie.lenguajes_2025.domain.User;
-import java.util.LinkedList;
+import cr.ac.ucr.ie.lenguajes_2025.repository.UserRepository;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author Daniel
  */
+@Service
 public class UserService {
-    
-    private static UserDAOImplement service = new UserDAOImplement();
 
-    public UserService() {}
-    
-    public static LinkedList<User> getAllUsers(){
-        return service.getAll();
-    }
-    
-    public static User getUserById(int id){
-        return service.findById(id);
-    }
-    
-    public static void insertUser(User newUser){
-        service.insert(newUser);
-    }
-    
-    public static void updateUser(User modifyUser){
-        service.update(modifyUser);
-    }
-    
-    public static void deleteUser(int userId){
-        service.deleteById(userId);
-    }
-    
-    public static User login(String email, String password){
-        return service.login(email, password);
-    }
-    
-    public static void insertUserWithImage(User user, MultipartFile imageFile) throws Exception {
-        service.insert(user);
+    private final UserRepository repo;
+    private final UserImageService imageService;
 
-        User lastInsertedUser = service.getLastInsertedUser();
+    @Autowired
+    public UserService(UserRepository repo, UserImageService imageService) {
+        this.repo = repo;
+        this.imageService = imageService;
+    }
+
+    public List<User> getAllUsers() {
+        return repo.findAll();
+    }
+
+    public User getUserById(int id) {
+        return repo.findById(id).get();
+    }
+
+    public void insertUser(User newUser) {
+        repo.save(newUser);
+    }
+
+    public void deleteUser(int userId) {
+        repo.deleteById(userId);
+    }
+
+    public User findUserByEmail(String email) {
+        return this.repo.findByEmail(email);
+    }
+
+    public void insertUserWithImage(User user, MultipartFile imageFile) throws Exception {
+
+        User lastInsertedUser = this.repo.save(user);
 
         String imageUrl = UserImageService.saveUserImage(imageFile);
 
         lastInsertedUser.setUrlProfilePicture(imageUrl);
-        service.update(lastInsertedUser);
+        this.repo.save(user);
     }
-    
-    public static void updateUserWithImage(User user, MultipartFile imageFile) throws Exception {
-        if (imageFile != null && !imageFile.isEmpty()) {
-            // 1. Guardar imagen nueva en disco
-            String imageUrl = UserImageService.saveUserImage(imageFile);
 
-            // 2. Asignar la nueva URL
-            user.setUrlProfilePicture(imageUrl);
-        } else {
-            // 3. Mantener la imagen actual si no se sube una nueva
-            User existingUser = service.findById(user.getIdUser());
+    public void updateUser(User user) {
+        User existingUser = repo.findById(user.getIdUser())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Mantener la contraseña si no se envía
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            user.setPassword(existingUser.getPassword());
+        }
+
+        // Mantener la URL de la imagen si no se envía en la petición
+        if (user.getUrlProfilePicture() == null || user.getUrlProfilePicture().isEmpty()) {
             user.setUrlProfilePicture(existingUser.getUrlProfilePicture());
         }
 
-        // 4. Actualizar promoción en DB
-        service.update(user);
+        repo.save(user);
     }
+
+    public void updateUserWithImage(User user, MultipartFile imageFile) throws Exception {
+        User existingUser = this.repo.findById(user.getIdUser()).get();
+
+        // Mantener contraseña actual si no se envía una nueva
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            user.setPassword(existingUser.getPassword());
+        }
+
+        // Manejar imagen
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageUrl = UserImageService.saveUserImage(imageFile);
+            user.setUrlProfilePicture(imageUrl);
+        } else {
+            user.setUrlProfilePicture(existingUser.getUrlProfilePicture());
+        }
+
+        repo.save(user);
+    }
+
 }
