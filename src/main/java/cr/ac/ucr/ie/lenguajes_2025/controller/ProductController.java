@@ -1,117 +1,141 @@
 package cr.ac.ucr.ie.lenguajes_2025.controller;
 
 import cr.ac.ucr.ie.lenguajes_2025.domain.Product;
-import cr.ac.ucr.ie.lenguajes_2025.services.ProductServices;
-import java.text.SimpleDateFormat;
+import cr.ac.ucr.ie.lenguajes_2025.dto.ProductDTO;
+import cr.ac.ucr.ie.lenguajes_2025.services.ProductService;
+import cr.ac.ucr.ie.lenguajes_2025.exception.ApiErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
 @CrossOrigin(origins = "http://localhost:3000")
 public class ProductController {
 
-    private final ProductServices productServices;
+    private final ProductService productService;
 
     @Autowired
-    public ProductController(ProductServices productServices) {
-        this.productServices = productServices;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
     // Obtener todos los productos
-    @GetMapping("")
-    public List<Product> getAllProducts() {
-        return productServices.getAllProducts();
+    @GetMapping
+    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+        List<ProductDTO> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
     }
 
-    // Obtener un producto por su ID
+    // Obtener un producto por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable int id) {
-        Optional<Product> productOpt = productServices.findProductById(id);
-        return productOpt.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<?> getProductById(@PathVariable int id, HttpServletRequest request) {
+        return productService.getProductDTOById(id)
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> buildError(HttpStatus.NOT_FOUND, "Producto no encontrado", request.getRequestURI()));
     }
 
-    // Insertar un nuevo producto sin imagen
-    @PostMapping("")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product saved = productServices.insertProduct(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    // Crear un nuevo producto
+    @PostMapping
+    public ResponseEntity<?> createProduct(@RequestBody Product product, HttpServletRequest request) {
+        try {
+            validateProductDataCreate(product);
+            ProductDTO created = productService.createProduct(product);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (IllegalArgumentException e) {
+            return buildError(HttpStatus.BAD_REQUEST, e.getMessage(), request.getRequestURI());
+        }
     }
 
-    // Actualizar un producto existente sin imagen
+    // Actualizar un producto existente
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable int id, @RequestBody Product product) {
-        product.setIdProduct(id);
-        Product updated = productServices.updateProduct(product);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<?> updateProduct(@PathVariable int id, @RequestBody Product updatedProduct, HttpServletRequest request) {
+        try {
+            validateProductDataUpdate(updatedProduct);
+            ProductDTO updated = productService.updateProduct(id, updatedProduct);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return buildError(HttpStatus.BAD_REQUEST, e.getMessage(), request.getRequestURI());
+        } catch (RuntimeException e) {
+            return buildError(HttpStatus.NOT_FOUND, "Producto no encontrado para actualizar", request.getRequestURI());
+        }
     }
 
     // Eliminar un producto
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
-        productServices.deleteProductById(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // Insertar un producto con imagen
-    @PostMapping("/with-image")
-    public ResponseEntity<Product> insertProductWithImage(
-            @RequestParam String name,
-            @RequestParam String description,
-            @RequestParam double price,
-            @RequestParam(required = false, defaultValue = "0") Integer stock,
-            @RequestParam String entryDate, // <-- formato dd-MM-yyyy
-            @RequestParam("image") MultipartFile image) {
+    public ResponseEntity<?> deleteProduct(@PathVariable int id, HttpServletRequest request) {
         try {
-            Product product = new Product();
-            product.setName(name);
-            product.setDetails(description);
-            product.setPrice((float) price);
-            product.setStock(stock);
-
-            // Parsear string a Date con formato dd-MM-yyyy
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-            java.util.Date utilDate = formatter.parse(entryDate);
-            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-            product.setEntryDate(sqlDate); // <-- setear la fecha convertida
-
-            Product savedProduct = productServices.insertProductWithImage(product, image);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            productService.deleteProduct(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return buildError(HttpStatus.NOT_FOUND, "Producto no encontrado para eliminar", request.getRequestURI());
         }
     }
 
-    // Actualizar un producto con imagen
-    @PostMapping("/with-image-update")
-    public ResponseEntity<Product> updateProductWithImage(
-            @RequestParam int id,
-            @RequestParam String name,
-            @RequestParam String description,
-            @RequestParam double price,
-            @RequestParam(required = false, defaultValue = "0") Integer stock,
-            @RequestParam("image") MultipartFile image) {
-        try {
-            Product product = new Product();
-            product.setIdProduct(id);
-            product.setName(name);
-            product.setDetails(description);
-            product.setPrice((float) price);
-            product.setStock(stock);
+    // 🔧 Método reutilizable para construir errores con ApiErrorResponse
+    private ResponseEntity<ApiErrorResponse> buildError(HttpStatus status, String message, String path) {
+        ApiErrorResponse error = new ApiErrorResponse(
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                path
+        );
+        return ResponseEntity.status(status).body(error);
+    }
 
-            Product updatedProduct = productServices.updateProductWithImage(product, image);
-            return ResponseEntity.ok(updatedProduct);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    // ✅ Validaciones de creación
+    private void validateProductDataCreate(Product product) {
+        LocalDate today = LocalDate.now();
+
+        if (product.getPrice() < 0) {
+            throw new IllegalArgumentException("El precio debe ser un número positivo válido en colones CR.");
+        }
+
+        if (product.getStock() < 0) {
+            throw new IllegalArgumentException("La cantidad en stock no puede ser negativa.");
+        }
+
+        LocalDate entryDate = product.getEntryDate().toLocalDate();
+
+        if (entryDate == null) {
+            throw new IllegalArgumentException("La fecha de ingreso no puede estar vacía.");
+        }
+
+        if (entryDate.isBefore(today.minusMonths(1))) {
+            throw new IllegalArgumentException("La fecha de ingreso no puede ser anterior a 1 mes desde hoy.");
+        }
+
+        if (entryDate.isAfter(today.plusMonths(18))) {
+            throw new IllegalArgumentException("La fecha de ingreso no puede ser más de 1 año y medio en el futuro.");
+        }
+    }
+
+    // ✅ Validaciones de edición
+    private void validateProductDataUpdate(Product product) {
+        LocalDate today = LocalDate.now();
+
+        if (product.getPrice() < 0) {
+            throw new IllegalArgumentException("El precio debe ser un número positivo válido en colones CR.");
+        }
+
+        if (product.getStock() < 0) {
+            throw new IllegalArgumentException("La cantidad en stock no puede ser negativa.");
+        }
+
+        LocalDate entryDate = product.getEntryDate().toLocalDate();
+
+        if (entryDate == null) {
+            throw new IllegalArgumentException("La fecha de ingreso no puede estar vacía.");
+        }
+
+        if (entryDate.isAfter(today.plusMonths(3))) {
+            throw new IllegalArgumentException("La fecha de ingreso no puede ser más de 3 meses en el futuro desde hoy.");
         }
     }
 }
