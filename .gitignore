@@ -50,3 +50,8 @@ spring.log
 !**/src/test/**/.gitkeep
 "nbactions.xml" 
 "git" 
+<<<<<<< Updated upstream
+=======
+>>>>>>> dani
+src/main/resources/application.properties
+>>>>>>> Stashed changes

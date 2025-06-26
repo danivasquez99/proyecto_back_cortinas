@@ -11,31 +11,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.LinkedList;
 
-/**
- *
- * @author Daniel
- */
 public class UserDAOImplement implements UserDAO {
 
     @Override
     public LinkedList<User> getAll() {
-        LinkedList<User> usersList = new LinkedList<User>();
+        LinkedList<User> usersList = new LinkedList<>();
+        StringBuilder sql = new StringBuilder("CALL sp_get_all_users();");
 
-        StringBuilder sql = new StringBuilder();
-        sql.append("CALL sp_get_all_users();");
-
-        try {
-            Connection cn = ConnectionDB.getConnection();
-            PreparedStatement ps = cn.prepareStatement(sql.toString());
-            ResultSet rs = ps.executeQuery();
-
-            User user;
+        try (Connection cn = ConnectionDB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql.toString());
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                user = new User();
+                User user = new User();
                 user.setIdUser(rs.getInt(1));
                 user.setName(rs.getString(2));
                 user.setBirthdate(rs.getDate(3));
@@ -45,7 +35,7 @@ public class UserDAOImplement implements UserDAO {
                 user.setRole(rs.getString(7));
                 user.setIsActive("1".equals(rs.getString(8)));
                 user.setCreatedAt(Timestamp.valueOf(rs.getDate(9).toString()));
-                
+
                 usersList.add(user);
             }
 
@@ -58,19 +48,21 @@ public class UserDAOImplement implements UserDAO {
 
     @Override
     public void insert(User t) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("CALL sp_insert_user(?,?,?,?,?);");
+        StringBuilder sql = new StringBuilder("CALL sp_insert_user(?,?,?,?,?,?,?);");
 
-        try {
-            Connection cn = ConnectionDB.getConnection();
-            PreparedStatement ps = cn.prepareStatement(sql.toString());
+        try (Connection cn = ConnectionDB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql.toString())) {
+
             ps.setString(1, t.getName());
             ps.setDate(2, t.getBirthdate());
             ps.setString(3, t.getEmail());
             ps.setString(4, SecurityUtils.encryptSHA256(t.getPassword()));
             ps.setString(5, t.getUrlProfilePicture());
+            ps.setString(6, t.getRole());
+            ps.setBoolean(7, t.getIsActive());
 
             ps.executeUpdate();
+
         } catch (SQLException e) {
             System.err.println("Error al insertar usuario: " + e.getMessage());
         }
@@ -78,20 +70,22 @@ public class UserDAOImplement implements UserDAO {
 
     @Override
     public void update(User t) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("CALL sp_update_user(?,?,?,?,?,?);");
+        StringBuilder sql = new StringBuilder("CALL sp_update_user(?,?,?,?,?,?,?,?);");
 
-        try {
-            Connection cn = ConnectionDB.getConnection();
-            PreparedStatement ps = cn.prepareStatement(sql.toString());
+        try (Connection cn = ConnectionDB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql.toString())) {
+
             ps.setInt(1, t.getIdUser());
             ps.setString(2, t.getName());
             ps.setDate(3, t.getBirthdate());
             ps.setString(4, t.getEmail());
             ps.setString(5, SecurityUtils.encryptSHA256(t.getPassword()));
             ps.setString(6, t.getUrlProfilePicture());
+            ps.setString(7, t.getRole());
+            ps.setBoolean(8, t.getIsActive());
 
             ps.executeUpdate();
+
         } catch (SQLException e) {
             System.err.println("Error al actualizar usuario: " + e.getMessage());
         }
@@ -99,15 +93,14 @@ public class UserDAOImplement implements UserDAO {
 
     @Override
     public void deleteById(Integer t) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("CALL sp_delete_user(?);");
+        StringBuilder sql = new StringBuilder("CALL sp_delete_user(?);");
 
-        try {
-            Connection cn = ConnectionDB.getConnection();
-            PreparedStatement ps = cn.prepareStatement(sql.toString());
+        try (Connection cn = ConnectionDB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql.toString())) {
+
             ps.setInt(1, t);
-
             ps.executeUpdate();
+
         } catch (Exception e) {
             System.err.println("Error al eliminar usuario: " + e.getMessage());
         }
@@ -116,13 +109,11 @@ public class UserDAOImplement implements UserDAO {
     @Override
     public User findById(Integer t) {
         User user = new User();
+        StringBuilder sql = new StringBuilder("CALL sp_find_user_by_id(?);");
 
-        StringBuilder sql = new StringBuilder();
-        sql.append("CALL sp_find_user_by_id(?);");
+        try (Connection cn = ConnectionDB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql.toString())) {
 
-        try {
-            Connection cn = ConnectionDB.getConnection();
-            PreparedStatement ps = cn.prepareStatement(sql.toString());
             ps.setInt(1, t);
             ResultSet rs = ps.executeQuery();
 
@@ -149,7 +140,9 @@ public class UserDAOImplement implements UserDAO {
         User user = null;
         String sql = "SELECT * FROM user ORDER BY idUser DESC LIMIT 1";
 
-        try (Connection cn = ConnectionDB.getConnection(); PreparedStatement ps = cn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection cn = ConnectionDB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
                 user = new User();
@@ -170,26 +163,24 @@ public class UserDAOImplement implements UserDAO {
 
         return user;
     }
-    
+
     @Override
     public boolean validateExistingEmail(String email) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public User login(String email, String password) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("CALL sp_login_user(?,?);");
+        StringBuilder sql = new StringBuilder("CALL sp_login_user(?,?);");
 
         User userLogin = new User();
         String encryptPassword = SecurityUtils.encryptSHA256(password);
 
-        try {
-            Connection cn = ConnectionDB.getConnection();
-            PreparedStatement ps = cn.prepareStatement(sql.toString());
+        try (Connection cn = ConnectionDB.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql.toString())) {
+
             ps.setString(1, email);
             ps.setString(2, encryptPassword);
-
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -200,7 +191,7 @@ public class UserDAOImplement implements UserDAO {
                 userLogin.setPassword(rs.getString(5));
                 userLogin.setUrlProfilePicture(rs.getString(6));
                 userLogin.setRole(rs.getString(7));
-                userLogin.setIsActive(rs.getString(8).equals("1"));
+                userLogin.setIsActive("1".equals(rs.getString(8)));
             }
 
         } catch (SQLException e) {
@@ -209,5 +200,4 @@ public class UserDAOImplement implements UserDAO {
 
         return userLogin;
     }
-
 }
