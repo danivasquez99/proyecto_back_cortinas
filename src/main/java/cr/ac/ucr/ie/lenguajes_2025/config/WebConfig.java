@@ -41,7 +41,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/", "file:src/main/resources/static/")
                 .setCachePeriod(0) // Sin cache para desarrollo
                 .resourceChain(false);
-<<<<<<< HEAD
         
         // Añadido para imágenes de sorteos
         registry.addResourceHandler("/images/raffle/**")
@@ -49,8 +48,6 @@ public class WebConfig implements WebMvcConfigurer {
         .setCachePeriod(0)
         .resourceChain(false);
         // Fin añadido
-=======
->>>>>>> 84fec5d7b54ea8e0f37c792eeee9c9fb9b359a33
     }
     
     @Override
